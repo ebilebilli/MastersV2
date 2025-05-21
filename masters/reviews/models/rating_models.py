@@ -1,11 +1,11 @@
 from django.db import models
 from django.db.models import Avg, Count
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .comment_models import User
+from users.models import Master
 
 
 class Rating(models.Model):
-    master = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ratings') 
+    master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='ratings') 
     user = models.CharField(max_length=255)
     rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1),MaxValueValidator(5)])  
     created_at = models.DateTimeField(auto_now_add=True)
@@ -20,7 +20,7 @@ class Rating(models.Model):
 
 
 class MasterRating(models.Model):
-    master = models.OneToOneField(User, on_delete=models.CASCADE, related_name='master_rating')
+    master = models.OneToOneField(Master, on_delete=models.CASCADE, related_name='master_rating')
     average_rating = models.FloatField(default=0)
     rating_count = models.PositiveIntegerField(default=0)
 

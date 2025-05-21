@@ -1,14 +1,13 @@
 from rest_framework import serializers
-from masters.services.models.service_model_image import ServiceImage
-from services.models.service_model import Service
+from users.models import MasterWorkImage
 
 
-class ServiceImageSerializer(serializers.ModelSerializer):
+class MasterImageSerializer(serializers.ModelSerializer):
     service = serializers.PrimaryKeyRelatedField(read_only=True)  
     image_url = serializers.SerializerMethodField()
 
     class Meta:
-        model = ServiceImage
+        model = MasterWorkImage
         fields = '__all__'
 
     def get_image_url(self, obj):

@@ -1,40 +1,36 @@
 from rest_framework import serializers
-
-from users.models.customeruser_model import Master
+from masters.users.models import Master
 from services.models.category_model import Category
 from services.models.service_model import ServiceTemplate
 from core.models.city_model import City, District
+from core.models.language_model import Language
 
-class CitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = City
-        fields = ['id', 'name', 'display_name']
-
-class DistrictSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = District
-        fields = ['id', 'name', 'display_name', 'city']
 
 class MasterSerializer(serializers.ModelSerializer):
-    cities = serializers.PrimaryKeyRelatedField(many=True, queryset=City.objects.all())
-    districts = serializers.PrimaryKeyRelatedField(many=True, queryset=District.objects.all(), required=False)
-    profession_category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
-    profession_service = serializers.PrimaryKeyRelatedField(queryset=ServiceTemplate.objects.all())
+    cities = serializers.StringRelatedField(many=True)
+    districts = serializers.StringRelatedField(many=True)
+    profession_category = serializers.StringRelatedField()
+    profession_service = serializers.StringRelatedField()
+    languages = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Master
         fields = [
             'full_name', 'birthday', 'phone_number', 'gender',
             'profession_category', 'profession_service', 'custom_profession',
-            'experience', 'cities', 'districts', 'education', 'education_specialization'
+            'experience', 'cities', 'districts', 'education', 'education_detail', 'languages'
         ]
 
     def validate(self, data):
-        # Məcburi sahələr
+        # Mövcud validasiyalar
         required_fields = ['profession_category', 'profession_service', 'cities']
         for field in required_fields:
             if not data.get(field):
                 raise serializers.ValidationError({field: "Zəhmət olmasa, məlumatları daxil edin."})
+
+        # Dil bilikləri sahəsinin məcburi olduğunu yoxlama
+        if not data.get('languages'):
+            raise serializers.ValidationError({"languages": "Zəhmət olmasa, dil biliklərini daxil edin."})
 
         # Rayonların Bakıya aid olması
         districts = data.get('districts', [])
@@ -50,7 +46,6 @@ class MasterSerializer(serializers.ModelSerializer):
         if profession and profession_category and profession.category != profession_category:
             raise serializers.ValidationError({"profession_service": "Seçilmiş ixtisas bu kateqoriyaya aid deyil."})
 
-       
         # Təhsil və təhsil ixtisası yoxlaması
         education = data.get('education')
         education_detail = data.get('education_detail')
@@ -66,7 +61,9 @@ class MasterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         cities = validated_data.pop('cities', [])
         districts = validated_data.pop('districts', [])
+        languages = validated_data.pop('languages', [])
         user = Master.objects.create_user(**validated_data)
         user.cities.set(cities)
         user.districts.set(districts)
+        user.languages.set(languages)
         return user

@@ -10,3 +10,23 @@ az_letters_validator = RegexValidator(
     regex=r'^[a-zA-ZəƏöÖüÜşŞçÇğĞıİ\s]+$',
     message='Yalnız Azərbaycan hərfləri ilə yazılmalıdır.'
 )
+
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from datetime import datetime, timedelta
+
+def validate_birthday(value):
+    today = timezone.now().date()
+    
+    if isinstance(value, str):
+        try:
+            value = datetime.strptime(value, '%Y-%m-%d').date()
+        except ValueError:
+            raise ValidationError("Tarix formatı düzgün deyil. Format belə olmalıdır: YYYY-MM-DD")
+    
+    if value > today:
+        raise ValidationError("Ad günü gələcək tarix ola bilməz.")
+
+    min_allowed_date = today - timedelta(days=365*100)
+    if value < min_allowed_date:
+        raise ValidationError("Ad günü 100 ildən daha köhnə ola bilməz.")

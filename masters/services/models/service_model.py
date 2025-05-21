@@ -1,11 +1,8 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 
 from .category_model import Category
 from core.models.city_model import City
 
-
-User = get_user_model()
 
 class ServiceTemplate(models.Model):
     category = models.ForeignKey(
