@@ -14,12 +14,14 @@ class Master(AbstractUser):
     profession_category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        related_name='category_masters'
+        related_name='category_masters',
+        null=True
     )
     profession_service = models.ForeignKey(
         ServiceTemplate,
         on_delete=models.CASCADE,
-        related_name='profession_masters'
+        related_name='profession_masters',
+        null=True
     )
     custom_profession = models.CharField(
         max_length=100,
@@ -30,33 +32,35 @@ class Master(AbstractUser):
     cities = models.ManyToManyField(
         City,
         related_name='city_masters',
-        verbose_name='Şəhərlər'
+        verbose_name='Şəhərlər',
     )
     districts = models.ManyToManyField(
         District,
         related_name='district_masters',
-        blank=True
+        blank=True,
     )
     education = models.ForeignKey(
         Education,
         on_delete=models.CASCADE,
-        related_name='education_masters'
+        related_name='education_masters',
+        null=True
     )
     education_detail = models.CharField(
         max_length=50,
         null=True,
         blank=True,
-        validators=[az_letters_validator]
+        validators=[az_letters_validator],
     )
     languages = models.ManyToManyField(
         Language,
         related_name='language_masters',
-        verbose_name='Dillər'
+        verbose_name='Dillər',
     )
     full_name = models.CharField(
-        max_length=20,
+        max_length=50,
         validators=[az_letters_validator],
-        verbose_name='Ad və soyad'
+        verbose_name='Ad və soyad',
+        null=True
     )
     profile_picture = models.ImageField(
         upload_to='profile_pictures/',
@@ -64,24 +68,28 @@ class Master(AbstractUser):
         blank=True
     )
     birthday = models.DateField(
-        validators=[validate_birthday]
+        validators=[validate_birthday],
+        null=True
     )
     phone_number = models.CharField(
         max_length=13,
         validators=[phone_validator],
-        verbose_name='Mobil nömrə'
+        verbose_name='Mobil nömrə',
+        null=True
     )
     gender = models.CharField(
         max_length=5,
         choices=GENDER_STATUS,
-        verbose_name='Cinsiyyət'
+        verbose_name='Cinsiyyət',
+        null=True
     )
     is_active_on_main_page = models.BooleanField(default=True)
     note = models.CharField(
         max_length=1500,
-        verbose_name='Qeyd'
+        verbose_name='Qeyd',
+        null=True
     )
-    experience = models.PositiveSmallIntegerField()
+    experience = models.PositiveSmallIntegerField(null=True)
     facebook_url = models.URLField(
         blank=True,
         null=True
@@ -104,14 +112,15 @@ class Master(AbstractUser):
     )
 
 
-from django.db import models
-
-from users.models import Master
-
 class MasterWorkImage(models.Model):
     master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='master_handwork_images/', blank=True, null=True)
+    order = models.PositiveIntegerField(default=0) 
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['order'] 
+        
     def __str__(self):
         return f'Image for {self.master.full_name}'
+    

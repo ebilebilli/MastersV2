@@ -3,7 +3,7 @@ from users.models import MasterWorkImage
 
 
 class MasterImageSerializer(serializers.ModelSerializer):
-    service = serializers.PrimaryKeyRelatedField(read_only=True)  
+    master = serializers.PrimaryKeyRelatedField(read_only=True)  
     image_url = serializers.SerializerMethodField()
 
     class Meta:
@@ -17,10 +17,10 @@ class MasterImageSerializer(serializers.ModelSerializer):
 
     def validate_image(self, value):
         if not value:
-            raise serializers.ValidationError("An image must be uploaded.")
+            raise serializers.ValidationError("Şəkil seçin zəhmət olmasa")
         if value.size > 5 * 1024 * 1024:
-            raise serializers.ValidationError("Image size cannot exceed 5MB.")
+             raise serializers.ValidationError("Şəkil həcmi 5MB-dan çox olmamalıdır.")
         valid_formats = ['image/jpeg', 'image/png']
         if value.content_type not in valid_formats:
-            raise serializers.ValidationError("Only JPEG and PNG formats are supported.")
+            raise serializers.ValidationError("Şəkil formatı : jpg, png dəstəklənir")
         return value

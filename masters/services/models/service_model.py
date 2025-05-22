@@ -1,7 +1,6 @@
 from django.db import models
 
 from .category_model import Category
-from core.models.city_model import City
 
 
 class ServiceTemplate(models.Model):
@@ -15,6 +14,3 @@ class ServiceTemplate(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.category.display_name})'
-
-
-

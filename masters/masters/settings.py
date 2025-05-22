@@ -127,3 +127,22 @@ CELERY_TIMEZONE = 'UTC'
 #Media settings
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+
+#JWT settings
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),  
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',  
+    'SIGNING_KEY': SECRET_KEY, 
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',), 
+    'USER_ID_FIELD': 'id',  
+    'USER_ID_CLAIM': 'user_id', 
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'JTI_CLAIM': 'jti',
+}
