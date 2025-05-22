@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils.text import slugify#
+from django.utils.text import slugify
 from django.db.models import Avg
 
 from reviews.models.rating_models import Rating
@@ -78,6 +78,7 @@ class Master(AbstractUser):
         max_length=13,
         validators=[phone_validator],
         verbose_name='Mobil nömrə',
+        unique=True,
         null=True
     )
     gender = models.CharField(
@@ -141,6 +142,9 @@ class Master(AbstractUser):
                 i += 1
             self.slug = unique_slug
         super().save(*args, **kwargs)
+    
+    USERNAME_FIELD = 'phone_number'
+    REQUIRED_FIELDS = ['full_name']
 
 
 class MasterWorkImage(models.Model):
@@ -148,6 +152,7 @@ class MasterWorkImage(models.Model):
     image = models.ImageField(upload_to='master_handwork_images/', blank=True, null=True)
     order = models.PositiveIntegerField(default=0) 
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['order'] 

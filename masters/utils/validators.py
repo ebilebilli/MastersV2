@@ -1,4 +1,7 @@
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 
 phone_validator = RegexValidator(
@@ -6,14 +9,12 @@ phone_validator = RegexValidator(
     message="Mobil nömrə düzgün daxil edilməyib. 50 123 45 67 formatında daxil edin."
 )
 
+
 az_letters_validator = RegexValidator(
     regex=r'^[a-zA-ZəƏöÖüÜşŞçÇğĞıİ\s]+$',
     message='Yalnız Azərbaycan hərfləri ilə yazılmalıdır.'
 )
 
-from django.core.exceptions import ValidationError
-from django.utils import timezone
-from datetime import datetime, timedelta
 
 def validate_birthday(value):
     today = timezone.now().date()

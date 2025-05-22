@@ -3,7 +3,7 @@ from masters.users.models import Master
 from services.models.category_model import Category
 from services.models.service_model import ServiceTemplate
 from core.models.city_model import City, District
-from core.models.language_model import Language
+
 
 
 class MasterSerializer(serializers.ModelSerializer):
@@ -59,13 +59,3 @@ class MasterSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({"education_detail": "Təhsil 'Yoxdur' seçilibsə, ixtisas daxil edilməməlidir."})
 
         return data
-
-    def create(self, validated_data):
-        cities = validated_data.pop('cities', [])
-        districts = validated_data.pop('districts', [])
-        languages = validated_data.pop('languages', [])
-        user = Master.objects.create_user(**validated_data)
-        user.cities.set(cities)
-        user.districts.set(districts)
-        user.languages.set(languages)
-        return user
