@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.text import slugify
 
 from core.models.city_model import City, District
 from core.models.education_model import Education
@@ -90,6 +91,11 @@ class Master(AbstractUser):
         null=True
     )
     experience = models.PositiveSmallIntegerField(null=True)
+    address = models.CharField(
+        max_length=255, 
+        null=True, 
+        blank=True
+    )
     facebook_url = models.URLField(
         blank=True,
         null=True
@@ -110,6 +116,22 @@ class Master(AbstractUser):
         blank=True,
         null=True
     )
+    slug = models.SlugField(
+        unique=True, 
+        blank=True, 
+        editable=False
+    )
+    
+    def save(self, *args, **kwargs):
+        if not self.slug and self.full_name:
+            base_slug = slugify(self.full_name)
+            unique_slug = base_slug
+            i = 1
+            while Master.objects.filter(slug=unique_slug).exists():
+                unique_slug = f'{base_slug}-{i}'
+                i += 1
+            self.slug = unique_slug
+        super().save(*args, **kwargs)
 
 
 class MasterWorkImage(models.Model):
