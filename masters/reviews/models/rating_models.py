@@ -12,20 +12,15 @@ class Rating(models.Model):
 
     class Meta:
         unique_together = ('master', 'user')
-    
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        master_rating, created = MasterRating.objects.get_or_create(master=self.master)
-        master_rating.update()
 
 
-class MasterRating(models.Model):
-    master = models.OneToOneField(Master, on_delete=models.CASCADE, related_name='master_rating')
-    average_rating = models.FloatField(default=0)
-    rating_count = models.PositiveIntegerField(default=0)
+# class MasterRating(models.Model):
+#     master = models.OneToOneField(Master, on_delete=models.CASCADE, related_name='master_rating')
+#     average_rating = models.FloatField(default=0)
+#     rating_count = models.PositiveIntegerField(default=0)
 
-    def update(self):
-        agg = self.master.ratings.aggregate(avg=Avg('rating'), count=Count('id'))
-        self.average_rating = agg['avg'] or 0
-        self.rating_count = agg['count']
-        self.save()
+#     def update(self):
+#         agg = self.master.ratings.aggregate(avg=Avg('rating'), count=Count('id'))
+#         self.average_rating = agg['avg'] or 0
+#         self.rating_count = agg['count']
+#         self.save()

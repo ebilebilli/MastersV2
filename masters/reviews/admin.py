@@ -20,15 +20,3 @@ class RatingAdmin(admin.ModelAdmin):
     actions = ['delete_selected']
 
 
-@admin.register(MasterRating)
-class MasterRatingAdmin(admin.ModelAdmin):
-    list_display = ('master_full_name', 'average_rating', 'rating_count')
-    search_fields = ('master__full_name',)
-    readonly_fields = ('average_rating', 'rating_count')
-    ordering = ('-average_rating',)
-    list_select_related = ('master',)
-
-    def master_full_name(self, obj):
-        return obj.master.full_name
-    master_full_name.admin_order_field = 'master__full_name'
-    master_full_name.short_description = 'Master'

@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils.text import slugify
+from django.utils.text import slugify#
+from django.db.models import Avg
 
+from reviews.models.rating_models import Rating
 from core.models.city_model import City, District
 from core.models.education_model import Education
 from core.models.language_model import Language
@@ -121,6 +123,13 @@ class Master(AbstractUser):
         blank=True, 
         editable=False
     )
+    @property
+    def average_rating(self):
+        return Rating.objects.filter(master=self).aggregate(avg=Avg('rating'))['avg'] or 0
+
+    @property
+    def rating_count(self):
+        return Rating.objects.filter(master=self).count()
     
     def save(self, *args, **kwargs):
         if not self.slug and self.full_name:

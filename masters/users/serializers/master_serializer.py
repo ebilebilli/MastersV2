@@ -12,6 +12,8 @@ class MasterSerializer(serializers.ModelSerializer):
     profession_category = serializers.StringRelatedField()
     profession_service = serializers.StringRelatedField()
     languages = serializers.StringRelatedField(many=True)
+    average_rating = serializers.FloatField(source='average_rating', read_only=True)
+    rating_count = serializers.IntegerField(source='rating_count', read_only=True)
 
     class Meta:
         model = Master
