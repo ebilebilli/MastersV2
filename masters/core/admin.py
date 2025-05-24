@@ -4,7 +4,6 @@ from core.models.education_model import Education
 from core.models.language_model import Language
 
 
-
 class CityAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'name')
     search_fields = ('name', 'display_name')

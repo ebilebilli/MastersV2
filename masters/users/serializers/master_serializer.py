@@ -5,7 +5,6 @@ from services.models.service_model import ServiceTemplate
 from core.models.city_model import City, District
 
 
-
 class MasterSerializer(serializers.ModelSerializer):
     cities = serializers.StringRelatedField(many=True)
     districts = serializers.StringRelatedField(many=True)

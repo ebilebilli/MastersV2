@@ -8,7 +8,7 @@ from apis.user_apis.register_views import (
 )
 
 
-app_name = 'apis'
+app_name = 'user_apis'
 
 urlpatterns = [   
                 

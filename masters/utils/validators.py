@@ -15,6 +15,20 @@ az_letters_validator = RegexValidator(
     message='Yalnız Azərbaycan hərfləri ilə yazılmalıdır.'
 )
 
+def validate_full_name(value):
+    az_letters_validator(value)
+
+    if len(value.strip()) < 7:
+        raise ValidationError('Ad və soyad cəmi ən azı 7 simvol olmalıdır.')
+
+    if ' ' not in value.strip():
+        raise ValidationError('Ad və soyad arasında boşluq olmalıdır.')
+
+    if value.strip() == '' or value.strip().count(' ') > value.strip().count('') - 1:
+        raise ValidationError('Düzgün ad və soyad daxil edin.')
+
+    return value
+
 
 def validate_birthday(value):
     today = timezone.now().date()

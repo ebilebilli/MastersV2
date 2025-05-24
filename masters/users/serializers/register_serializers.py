@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import FileExtensionValidator
-from models import Master
+from users.models import Master
 from core.models.city_model import City, District
 from core.models.education_model import Education
 from core.models.language_model import Language
