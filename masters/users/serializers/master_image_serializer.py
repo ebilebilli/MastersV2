@@ -24,3 +24,10 @@ class MasterImageSerializer(serializers.ModelSerializer):
         if value.content_type not in valid_formats:
             raise serializers.ValidationError("Şəkil formatı : jpg, png dəstəklənir")
         return value
+    
+    def update(self, instance, validated_data):
+        portfolio_images = validated_data.pop('portfolio_images', [])
+        instance = super().update(instance, validated_data)
+        for img in portfolio_images:
+            MasterWorkImage.objects.create(master=instance, image=img)
+        return instance
