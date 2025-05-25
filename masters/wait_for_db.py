@@ -6,11 +6,11 @@ import os
 while True:
     try:
         conn = psycopg2.connect(
-            NAME = os.getenv('POSTGRES_DB'),
-            USER = os.getenv('POSTGRES_USER'),
-            PASSWORD = os.getenv('POSTGRES_PASSWORD'),
-            HOST = os.getenv('POSTGRES_HOST'),
-            PORT = os.getenv('POSTGRES_PORT'),
+            dbname = os.getenv('POSTGRES_DB'),
+            user = os.getenv('POSTGRES_USER'),
+            password = os.getenv('POSTGRES_PASSWORD'),
+            host = os.getenv('POSTGRES_HOST'),
+            port = os.getenv('POSTGRES_PORT'),
         )
         conn.close()
         break

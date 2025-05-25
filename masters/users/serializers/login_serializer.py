@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from users.models import Master
-from django.core.validators import RegexValidator
 from utils.validators import phone_validator
+
 
 class LoginSerializer(serializers.Serializer):
     phone_number = serializers.CharField(

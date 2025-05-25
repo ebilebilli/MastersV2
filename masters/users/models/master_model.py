@@ -1,8 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.db.models import Avg
 
+from .master_user_manager_model import MasterUserManager
 from reviews.models.rating_models import Rating
 from core.models.city_model import City, District
 from core.models.education_model import Education
@@ -20,6 +21,7 @@ class Master(AbstractUser):
     email = None
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['full_name']
+    objects = MasterUserManager()
 
     profession_category = models.ForeignKey(
         Category,
@@ -154,46 +156,6 @@ class Master(AbstractUser):
         super().save(*args, **kwargs)
 
 
-class MasterUserManager(BaseUserManager):
-    def create_user(self, phone_number, full_name, password=None, **extra_fields):
-        if not phone_number:
-            raise ValueError('Mobil nömrə mütləq daxil edilməlidir.')
-        if not full_name:
-            raise ValueError('Ad və soyad mütləq daxil edilməlidir.')
-
-        user = self.model(
-            phone_number=phone_number,
-            full_name=full_name,
-            **extra_fields
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, phone_number, full_name, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('is_active_on_main_page', True)
-
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser üçün is_staff=True olmalıdır.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser üçün is_superuser=True olmalıdır.')
-
-        return self.create_user(phone_number, full_name, password, **extra_fields)    
    
 
-class MasterWorkImage(models.Model):
-    master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='master_handwork_images/', blank=True, null=True)
-    order = models.PositiveIntegerField(default=0) 
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ['order'] 
-        
-    def __str__(self):
-        return f'Image for {self.master.full_name}'
     

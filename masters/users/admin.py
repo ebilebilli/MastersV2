@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from users.models import Master, MasterWorkImage
 
+
 class MasterAdmin(UserAdmin):
     # Admin paneldə göstəriləcək sahələr
     list_display = (

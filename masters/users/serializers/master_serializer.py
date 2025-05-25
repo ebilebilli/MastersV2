@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from masters.users.models import Master
-from services.models.category_model import Category
-from services.models.service_model import ServiceTemplate
-from core.models.city_model import City, District
+from users.models import Master
+from core.models.city_model import City
 
 
 class MasterSerializer(serializers.ModelSerializer):
