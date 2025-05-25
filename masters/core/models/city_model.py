@@ -27,5 +27,9 @@ class District(models.Model):
         unique=True
         )  
     display_name = models.CharField(
-        max_length=60
+        max_length=60,
+        unique=True
         )
+    
+    def __str__(self):
+        return self.display_name

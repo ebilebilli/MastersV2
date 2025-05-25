@@ -28,7 +28,7 @@ class RegisterPersonalAPIView(APIView):
                 full_name=serializer.validated_data['full_name'],
                 birthday=serializer.validated_data['birthday'],
                 gender=serializer.validated_data['gender'],
-                is_active=False  
+                is_active_on_main_page = False
             )
             master.set_password(serializer.validated_data['password'])  
             master.save()
@@ -46,7 +46,7 @@ class RegisterPersonalAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProfessionRegisterAPIView(APIView):
+class RegisterProfessionAPIView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser, MultiPartParser]
@@ -54,9 +54,7 @@ class ProfessionRegisterAPIView(APIView):
     @transaction.atomic
     def post(self, request):
         phone_number = request.data.get('phone_number')
-        if not phone_number:
-            return Response({'error': 'Telefon nömrəsi daxil edilməyib.'}, status=status.HTTP_400_BAD_REQUEST)    
-        master = Master.objects.get(phone_number=phone_number, is_active=False)
+        master = Master.objects.filter(phone_number=phone_number, is_active_on_main_page=False).first()
         if not master:
             return Response({
                 'error': 'İstifadəçi tapılmadı və ya qeydiyyatın bu mərhələsinə uyğun deyil.'
@@ -71,7 +69,7 @@ class ProfessionRegisterAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class RegisterAdditionaAPIView(APIView):
+class RegisterAdditionalAPIView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser, MultiPartParser]
@@ -79,9 +77,7 @@ class RegisterAdditionaAPIView(APIView):
     @transaction.atomic
     def post(self, request):
         phone_number = request.data.get('phone_number')
-        if not phone_number:
-            return Response({'error': 'Telefon nömrəsi daxil edilməyib.'}, status=status.HTTP_400_BAD_REQUEST)  
-        master = Master.objects.get(phone_number=phone_number, is_active=False)
+        master = Master.objects.filter(phone_number=phone_number, is_active_on_main_page=False).first()
         if not master:
             return Response({
                 'error': 'İstifadəçi tapılmadı və ya qeydiyyatın bu mərhələsinə uyğun deyil.'
@@ -90,7 +86,6 @@ class RegisterAdditionaAPIView(APIView):
         serializer = AdditionalInformationSerializer(master, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            master.is_active = True
             master.is_active_on_main_page = True
             master.save()
 

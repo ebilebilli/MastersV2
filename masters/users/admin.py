@@ -22,11 +22,11 @@ class MasterAdmin(UserAdmin):
     # Admin formasında göstəriləcək sahələr və qruplar
     fieldsets = (
         (None, {
-            'fields': ('username', 'password')
+            'fields': ('phone_number', 'password')
         }),
         ('Şəxsi məlumatlar', {
             'fields': (
-                'full_name', 'birthday', 'phone_number', 'gender',
+                'full_name', 'birthday', 'gender',
                 'profile_picture'
             )
         }),

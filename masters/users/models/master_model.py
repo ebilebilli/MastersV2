@@ -96,7 +96,6 @@ class Master(AbstractUser):
         verbose_name='Cinsiyyət',
         null=True
     )
-    is_active = models.BooleanField(default=False)
     is_active_on_main_page = models.BooleanField(default=False)
     note = models.CharField(
         max_length=1500,
@@ -154,8 +153,3 @@ class Master(AbstractUser):
                 i += 1
             self.slug = unique_slug
         super().save(*args, **kwargs)
-
-
-   
-
-    

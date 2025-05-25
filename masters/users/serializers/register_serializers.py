@@ -40,7 +40,7 @@ class ProfessionInformationSerializer(serializers.ModelSerializer):
         profession_category = data.get('profession_category')
         if profession and profession_category and profession.category != profession_category:
             raise serializers.ValidationError({"profession_service": "Seçilmiş ixtisas bu kateqoriyaya aid deyil."})
-
+        
         districts = data.get('districts', [])
         baku = City.objects.filter(name='baku').first()
         if districts and baku:
@@ -60,8 +60,8 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
         max_length=10,
         required=False
     )
-    average_rating = serializers.FloatField(source='average_rating', read_only=True)
-    rating_count = serializers.IntegerField(source='rating_count', read_only=True)
+    average_rating = serializers.FloatField(read_only=True)
+    rating_count = serializers.IntegerField(read_only=True)
     class Meta:
         model = Master
         fields = [

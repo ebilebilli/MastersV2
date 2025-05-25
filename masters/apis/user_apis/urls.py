@@ -3,8 +3,8 @@ from rest_framework_simplejwt import views as jwt_views
 from apis.user_apis.session_views import *
 from apis.user_apis.register_views import (
     RegisterPersonalAPIView,
-    ProfessionRegisterAPIView,
-    RegisterAdditionaAPIView,
+    RegisterProfessionAPIView,
+    RegisterAdditionalAPIView,
 )
 
 
@@ -21,13 +21,13 @@ urlpatterns = [
 
     path(
         'register/profession/',
-        ProfessionRegisterAPIView.as_view(),
+        RegisterProfessionAPIView.as_view(),
         name='register-profession'
     ),
     
     path(
         'register/additional/',
-        RegisterAdditionaAPIView.as_view(),
+        RegisterAdditionalAPIView.as_view(),
         name='register-additional'
     ),
     
