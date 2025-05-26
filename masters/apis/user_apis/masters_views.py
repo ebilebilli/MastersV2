@@ -1,18 +1,15 @@
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, Avg
 from django.db.models import Count
-from django.db import transaction
 
 from users.models.master_model import Master
 from users.serializers.master_serializer import MasterSerializer
 from services.models.category_model import Category
 from services.models.service_model import ServiceTemplate
+from utils.paginations import CustomPagination
 
 
 __all__ = [
@@ -23,8 +20,10 @@ __all__ = [
 
 class MastersListAPIView(APIView):
     permission_classes = [AllowAny]
+    pagination_class =  CustomPagination
 
     def get(self, request):
+        pagination = self.pagination_class()
         masters = Master.objects.annotate(
         avg_rating=Avg('ratings__rating'),
         count_ratings=Count('ratings') 
@@ -34,9 +33,10 @@ class MastersListAPIView(APIView):
             return Response({
                 'error': 'Hal-hazırda aktif bir usta yoxdur'
             }, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = MasterSerializer(masters, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        result_page = pagination.paginate_queryset(masters, request)
+        serializer = MasterSerializer(result_page, many=True)
+        paginated_response = pagination.get_paginated_response(serializer.data).data
+        return Response(paginated_response, status=status.HTTP_200_OK)
     
 
 class MasterDetailAPIView(APIView):
@@ -71,33 +71,44 @@ class MasterDetailAPIView(APIView):
 
 class MasterListForCategoryAPIView(APIView):
     permission_classes = [AllowAny]
+    pagination_class =  CustomPagination
 
     def get(self, request, category_id):
+        pagination = self.pagination_class()
         category = get_object_or_404(Category, id=category_id)
         masters =  Master.objects.filter(profession_category=category, is_active_on_main_page=True)
         if not masters.exists():
             return Response({
                 'error': 'Hal-hazırda bu kateqoriyaya uyğun aktif bir usta yoxdur'
             },status=status.HTTP_404_NOT_FOUND)
-        serializer = MasterSerializer(masters, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        result_page = pagination.paginate_queryset(masters, request)
+        serializer = MasterSerializer(result_page, many=True)
+        paginated_response = pagination.get_paginated_response(serializer.data).data
+        return Response(paginated_response, status=status.HTTP_200_OK)
 
 
 class MasterListForServicesAPIView(APIView):
     permission_classes = [AllowAny]
+    pagination_class =  CustomPagination
 
     def get(self, request, service_id):
+        pagination = self.pagination_class()
         service = get_object_or_404(ServiceTemplate, id=service_id)
         masters =  Master.objects.filter(profession_service=service, is_active_on_main_page=True)
         if not masters.exists():
             return Response({
                 'error': 'Hal-hazırda bu servisə uyğun aktif bir usta yoxdur'
             },status=status.HTTP_404_NOT_FOUND)
-        serializer = MasterSerializer(masters, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        result_page = pagination.paginate_queryset(masters, request)
+        serializer = MasterSerializer(result_page, many=True)
+        paginated_response = pagination.get_paginated_response(serializer.data).data
+        return Response(paginated_response, status=status.HTTP_200_OK)
 
 
 class FilteredMasterListAPIView(APIView):
+    permission_classes = [AllowAny]
+    pagination_class =  CustomPagination
+
     def get(self, request):
         query = request.query_params.get('q')
         category_id = request.query_params.get('category_id')
@@ -156,6 +167,8 @@ class FilteredMasterListAPIView(APIView):
                 {'detail': 'Uyğun usta tapılmadı.'},
                 status=status.HTTP_404_NOT_FOUND
             )
-
-        serializer = MasterSerializer(masters, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        pagination = self.pagination_class()
+        result_page = pagination.paginate_queryset(masters, request)
+        serializer = MasterSerializer(result_page, many=True)
+        paginated_response = pagination.get_paginated_response(serializer.data).data
+        return Response(paginated_response, status=status.HTTP_200_OK)
