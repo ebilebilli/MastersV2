@@ -9,15 +9,16 @@ class MasterSerializer(serializers.ModelSerializer):
     profession_category = serializers.StringRelatedField()
     profession_service = serializers.StringRelatedField()
     languages = serializers.StringRelatedField(many=True)
-    average_rating = serializers.FloatField(source='average_rating', read_only=True)
-    rating_count = serializers.IntegerField(source='rating_count', read_only=True)
+    average_rating = serializers.FloatField(read_only=True)
+    rating_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Master
         fields = [
             'full_name', 'birthday', 'phone_number', 'gender',
             'profession_category', 'profession_service', 'custom_profession',
-            'experience', 'cities', 'districts', 'education', 'education_detail', 'languages'
+            'experience', 'cities', 'districts', 'education', 'education_detail', 'languages',
+            'average_rating', 'rating_count' 
         ]
 
     def validate(self, data):

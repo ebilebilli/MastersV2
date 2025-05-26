@@ -1,11 +1,13 @@
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 from apis.user_apis.session_views import *
+from apis.user_apis.masters_views import *
 from apis.user_apis.register_views import (
     RegisterPersonalAPIView,
     RegisterProfessionAPIView,
     RegisterAdditionalAPIView,
 )
+
 
 
 app_name = 'user_apis'
@@ -42,6 +44,37 @@ urlpatterns = [
         'logout/',
         LogoutAPIView.as_view(),
         name='logout'
+    ),
+
+    # Master endpoints
+    path(
+        'masters/', 
+        MastersListAPIView.as_view(), 
+        name='masters-list'
+    ),
+
+    path(
+        'masters/<int:master_id>/', 
+        MasterDetailAPIView.as_view(),
+        name='master-detail'
+    ),
+
+    path(
+        'masters/category/<int:category_id>/', 
+        MasterListForCategoryAPIView.as_view(), 
+        name='masters-by-category'
+    ),
+
+    path(
+        'masters/service/<int:service_id>/', 
+        MasterListForServicesAPIView.as_view(), 
+        name='masters-by-service'
+    ),
+
+    path(
+        'masters/filter/', 
+        FilteredMasterListAPIView.as_view(), 
+        name='masters-filter'
     ),
 
     #Jwt endpoints

@@ -52,15 +52,15 @@ class MasterAdmin(UserAdmin):
     
     # Yeni istifadəçi əlavə edərkən göstəriləcək sahələr
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': (
-                'username', 'password1', 'password2', 'full_name', 'phone_number',
-                'birthday', 'gender', 'profession_category', 'profession_service',
-                'cities', 'districts', 'education', 'languages', 'is_active_on_main_page'
-            )
-        }),
-    )
+    (None, {
+        'classes': ('wide',),
+        'fields': (
+            'phone_number', 'password1', 'password2', 'full_name',
+            'birthday', 'gender', 'profession_category', 'profession_service',
+            'cities', 'districts', 'education', 'languages', 'is_active_on_main_page'
+        )
+    }),
+)
     
     # Çox-çox əlaqələr üçün filtrlənmiş widget
     filter_horizontal = ('cities', 'districts', 'languages')
