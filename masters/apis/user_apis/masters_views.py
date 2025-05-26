@@ -1,9 +1,3 @@
-'''
-master search
-master filtr
-
-'''
-
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -55,7 +49,7 @@ class MasterDetailAPIView(APIView):
         user = request.user
         master = get_object_or_404(Master, id=master_id)
         serializer = MasterSerializer(master, partial=True)
-        if master.user != user:
+        if master.id != user.id or user.is_superuser:
             return Response({'error': 'Bunu etməyə icazəniz yoxdur'}, status=status.HTTP_403_FORBIDDEN)
 
         if serializer.is_valid():
@@ -65,8 +59,8 @@ class MasterDetailAPIView(APIView):
         
     def delete(self, request, master_id):
         user = request.user
-        master = get_object_or_404(Master, id=master_id)
-        if master.user != user:
+        master = get_object_or_404(Master, id=master_id) 
+        if master.id != user.id or user.is_superuser:
             return Response({'error': 'Bunu etməyə icazəniz yoxdur'}, status=status.HTTP_403_FORBIDDEN)
         
         if master:
@@ -94,7 +88,7 @@ class MasterListForServicesAPIView(APIView):
 
     def get(self, request, service_id):
         service = get_object_or_404(ServiceTemplate, id=service_id)
-        masters =  Master.objects.filter(category=service, is_active_on_main_page=True)
+        masters =  Master.objects.filter(profession_service=service, is_active_on_main_page=True)
         if not masters.exists():
             return Response({
                 'error': 'Hal-hazırda bu servisə uyğun aktif bir usta yoxdur'
@@ -145,7 +139,11 @@ class FilteredMasterListAPIView(APIView):
             except ValueError:
                 pass
 
-        masters = Master.objects.filter(filters).annotate(avg_rating=Avg('rating__rating')).distinct()
+        masters = Master.objects.filter(filters).annotate(
+            avg_rating=Avg('ratings__rating'),
+            count_ratings=Count('ratings')
+        ).distinct()
+
         if min_rating:
             try:
                 min_rating = float(min_rating)

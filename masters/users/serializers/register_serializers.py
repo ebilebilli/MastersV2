@@ -64,6 +64,7 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
     )
     average_rating = serializers.FloatField(read_only=True)
     rating_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Master
         fields = [
@@ -78,12 +79,13 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
 
         education = data.get('education')
         education_detail = data.get('education_detail')
-        if education and education.name != 'none':
+        if education and hasattr(education, 'name') and education.name != 'none':
             if not education_detail:
                 raise serializers.ValidationError({"education_detail": "Zəhmət olmasa, təhsil ixtisasını daxil edin."})
-        else:
-            if education_detail:
-                raise serializers.ValidationError({"education_detail": "Təhsil 'Yoxdur' seçilibsə, ixtisas daxil edilməməlidir."})
+        
+        elif education_detail:
+            raise serializers.ValidationError({"education_detail": "Təhsil 'Yoxdur' seçilibsə, ixtisas daxil edilməməlidir."})
+
         return data
 
     def validate_portfolio_images(self, value):
