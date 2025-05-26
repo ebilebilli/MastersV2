@@ -25,11 +25,12 @@ class PersonalInformationSerializer(serializers.ModelSerializer):
     
 class ProfessionInformationSerializer(serializers.ModelSerializer):
     cities = serializers.PrimaryKeyRelatedField(many=True, queryset=City.objects.all(), required=True)
-    districts = serializers.PrimaryKeyRelatedField(many=True, queryset=District.objects.all(), required=False)
+    districts = serializers.PrimaryKeyRelatedField(many=True, queryset=District.objects.all(), required=False,)
+    
     class Meta:
         model = Master
         fields = ['profession_category', 'profession_service', 'experience', 'cities', 'districts']
-    
+        
     def validate(self, data):
         required_fields = ['profession_category', 'profession_service', 'cities']
         for field in required_fields:
@@ -38,15 +39,16 @@ class ProfessionInformationSerializer(serializers.ModelSerializer):
 
         profession = data.get('profession_service')
         profession_category = data.get('profession_category')
+
         if profession and profession_category and profession.category != profession_category:
             raise serializers.ValidationError({"profession_service": "Seçilmiş ixtisas bu kateqoriyaya aid deyil."})
         
         districts = data.get('districts', [])
-        baku = City.objects.filter(name='baku').first()
-        if districts and baku:
-            for district in districts:
-                if district.city != baku:
-                    raise serializers.ValidationError({"districts": "Rayonlar yalnız Bakı şəhərinə aid ola bilər."})
+        cities = data.get('cities', [])
+        baku = City.objects.filter(name__iexact='baku').first()
+        if districts and (not baku or baku not in cities):
+            raise serializers.ValidationError({"districts": "Rayonlar yalnız Bakı şəhəri seçildikdə əlavə oluna bilər."})
+        
         return data
 
 

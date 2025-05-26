@@ -33,11 +33,10 @@ class MasterSerializer(serializers.ModelSerializer):
 
         # Rayonların Bakıya aid olması
         districts = data.get('districts', [])
-        baku = City.objects.filter(name='baku').first()
-        if districts and baku:
-            for district in districts:
-                if district.city != baku:
-                    raise serializers.ValidationError({"districts": "Rayonlar yalnız Bakı şəhərinə aid ola bilər."})
+        cities = data.get('cities', [])
+        baku = City.objects.filter(name__iexact='baku').first()
+        if districts and (not baku or baku not in cities):
+            raise serializers.ValidationError({"districts": "Rayonlar yalnız Bakı şəhəri seçildikdə əlavə oluna bilər."})
 
         # Peşə ixtisasının kateqoriyaya uyğunluğu
         profession = data.get('profession_service')

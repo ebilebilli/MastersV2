@@ -32,6 +32,8 @@ def validate_full_name(value):
 
 def validate_birthday(value):
     today = timezone.now().date()
+    min_allowed_date = today - timedelta(days=365*100)
+    min_allowed_age = today - timedelta(days=365 * 13)
     
     if isinstance(value, str):
         try:
@@ -41,8 +43,10 @@ def validate_birthday(value):
     
     if value > today:
         raise ValidationError("Doğum günü gələcək tarix ola bilməz.")
-
-    min_allowed_date = today - timedelta(days=365*100)
+    
+    if value > min_allowed_age:
+        raise ValidationError("Istifadəçin yaşı 13 dən aşağı ola bilməz")
+    
     if value < min_allowed_date:
         raise ValidationError("Doğum günü 100 ildən daha köhnə ola bilməz.")
 
