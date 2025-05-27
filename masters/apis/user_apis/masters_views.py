@@ -8,7 +8,7 @@ from django.db.models import Count
 from users.models.master_model import Master
 from users.serializers.master_serializer import MasterSerializer
 from services.models.category_model import Category
-from services.models.service_model import ServiceTemplate
+from services.models.service_model import Service
 from utils.paginations import CustomPagination
 
 
@@ -93,7 +93,7 @@ class MasterListForServicesAPIView(APIView):
 
     def get(self, request, service_id):
         pagination = self.pagination_class()
-        service = get_object_or_404(ServiceTemplate, id=service_id)
+        service = get_object_or_404(Service, id=service_id)
         masters =  Master.objects.filter(profession_service=service, is_active_on_main_page=True)
         if not masters.exists():
             return Response({

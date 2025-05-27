@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_yasg',
-    'cities_light',
 
     #Apps
     'users',
@@ -126,6 +125,11 @@ CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 CELERY_IGNORE_RESULT = True
 CELERY_TIMEZONE = 'UTC'
+
+#Redis settings
+REDIS_HOST = os.getenv('REDIS_HOST', 'redis')         
+REDIS_PORT = os.getenv('REDIS_PORT', 6379)
+REDIS_DB = os.getenv('REDIS_DB', 0)
 
 #Media settings
 MEDIA_URL = '/media/'

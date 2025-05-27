@@ -1,18 +1,16 @@
 from rest_framework import serializers
 
-from services.models.service_model import ServiceTemplate
+from services.models.service_model import Service
 from services.models.category_model import Category
-from users.models import Master
-from core.models.city_model import City
 
 
-class ServiceTemplateSerializer(serializers.ModelSerializer):
+class ServiceSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
     queryset=Category.objects.all(),
     slug_field='name'
     )
    
     class Meta:
-        model = ServiceTemplate
+        model = Service
         fields = '__all__'
 

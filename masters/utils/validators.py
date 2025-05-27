@@ -65,3 +65,26 @@ class CustomPasswordValidator:
 
     def get_help_text(self):
         return "Peşə sahibi şifrəsini daxil edir. Şifrə hərf, rəqəm və simvoldan ibarət olmalıdır."
+
+
+class SocialURLValidator:
+    @staticmethod
+    def facebook(value):
+        if value and not value.startswith('https://www.facebook.com/'):
+            raise ValidationError("Facebook URL düzgün formatda deyil.")
+    @staticmethod
+    def instagram(value):
+        if value and not value.startswith('https://www.instagram.com/'):
+            raise ValidationError("Instagram URL düzgün formatda deyil.")
+    @staticmethod
+    def tiktok(value):
+        if value and not value.startswith('https://www.tiktok.com/'):
+            raise ValidationError("TikTok URL düzgün formatda deyil.")
+    @staticmethod
+    def linkedin(value):
+        if value and not value.startswith('https://www.linkedin.com/'):
+            raise ValidationError("LinkedIn URL düzgün formatda deyil.")
+    @staticmethod
+    def youtube(value):
+        if value and not (value.startswith('https://www.youtube.com/') or value.startswith('https://youtu.be/')):
+            raise ValidationError("YouTube URL düzgün formatda deyil.")

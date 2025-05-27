@@ -9,7 +9,7 @@ from core.models.city_model import City, District
 from core.models.education_model import Education
 from core.models.language_model import Language
 from services.models.category_model import Category
-from services.models.service_model import ServiceTemplate
+from services.models.service_model import Service
 from utils.validators import *
 from utils.constants import GENDER_STATUS
 
@@ -30,7 +30,7 @@ class Master(AbstractUser):
         null=True
     )
     profession_service = models.ForeignKey(
-        ServiceTemplate,
+        Service,
         on_delete=models.CASCADE,
         related_name='profession_masters',
         null=True
@@ -105,35 +105,43 @@ class Master(AbstractUser):
     experience = models.PositiveSmallIntegerField(
         null=True,
     )
-    address = models.CharField(
-        max_length=255, 
-        null=True, 
-        blank=True
-    )
     facebook_url = models.URLField(
         blank=True,
-        null=True
+        null=True,
+        validators=[SocialURLValidator.facebook]
     )
     instagram_url = models.URLField(
         blank=True,
-        null=True
+        null=True,
+        validators=[SocialURLValidator.instagram]
     )
     tiktok_url = models.URLField(
         blank=True,
-        null=True
+        null=True,
+        validators=[SocialURLValidator.tiktok]
     )
     linkedin_url = models.URLField(
         blank=True,
-        null=True
+        null=True,
+        validators=[SocialURLValidator.linkedin]
     )
     youtube_url = models.URLField(
         blank=True,
-        null=True
+        null=True,
+        validators=[SocialURLValidator.youtube]
     )
     slug = models.SlugField(
         unique=True, 
         blank=True, 
         editable=False
+    )
+    latitude = models.FloatField(
+        null=True, 
+        blank=True
+    )
+    longitude = models.FloatField(
+        null=True, 
+        blank=True
     )
     @property
     def average_rating(self):
@@ -152,4 +160,15 @@ class Master(AbstractUser):
                 unique_slug = f'{base_slug}-{i}'
                 i += 1
             self.slug = unique_slug
+        
+        if self.full_name:
+            self.education_detail = self.education_detail.title()
+
+        if self.education_detail:
+            self.education_detail = self.education_detail.title()
+        
+        if self.note:
+            self.note = self.note.capitalize()
+        
+
         super().save(*args, **kwargs)

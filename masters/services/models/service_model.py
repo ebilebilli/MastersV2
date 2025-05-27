@@ -3,11 +3,11 @@ from django.db import models
 from .category_model import Category
 
 
-class ServiceTemplate(models.Model):
+class Service(models.Model):
     category = models.ForeignKey(
         Category, 
         on_delete=models.CASCADE, 
-        related_name='service_templates'
+        related_name='services'
         )
     name = models.CharField(max_length=100)  
     display_name = models.CharField(max_length=100)

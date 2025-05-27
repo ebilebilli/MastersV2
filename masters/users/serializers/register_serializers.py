@@ -29,20 +29,29 @@ class ProfessionInformationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Master
-        fields = ['profession_category', 'profession_service', 'experience', 'cities', 'districts']
+        fields = ['profession_category', 'profession_service', 'experience', 'cities', 'districts','custom_profession']
         
     def validate(self, data):
         required_fields = ['profession_category', 'profession_service', 'cities']
         for field in required_fields:
             if not data.get(field):
                 raise serializers.ValidationError({field: "Zəhmət olmasa, məlumatları daxil edin."})
-
-        profession = data.get('profession_service')
+            
         profession_category = data.get('profession_category')
+        profession_service = data.get('profession_service')
+        custom_profession = data.get('custom_profession')
 
-        if profession and profession_category and profession.category != profession_category:
+        if profession_service and profession_category and profession_service.category != profession_category:
             raise serializers.ValidationError({"profession_service": "Seçilmiş ixtisas bu kateqoriyaya aid deyil."})
         
+        is_other_service = profession_service and hasattr(profession_service, 'name') and profession_service.name.lower() == 'other'
+        if is_other_service:
+            if not custom_profession:
+                raise serializers.ValidationError({"custom_profession": "'Digər' xidmət seçilibsə, öz peşənizi daxil edin."})
+        else:
+            if custom_profession:
+                raise serializers.ValidationError({"custom_profession": "Xidmət 'Digər' deyilsə, öz peşənizi daxil etməyin."})
+
         districts = data.get('districts', [])
         cities = data.get('cities', [])
         baku = City.objects.filter(name__iexact='baku').first()
