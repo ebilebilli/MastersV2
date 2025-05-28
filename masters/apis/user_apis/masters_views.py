@@ -49,7 +49,7 @@ class MasterDetailAPIView(APIView):
         user = request.user
         master = get_object_or_404(Master, id=master_id)
         serializer = MasterSerializer(master, partial=True)
-        if master.id != user.id or user.is_superuser:
+        if master.id != user.id or not user.is_superuser:
             return Response({'error': 'Bunu etməyə icazəniz yoxdur'}, status=status.HTTP_403_FORBIDDEN)
 
         if serializer.is_valid():
@@ -60,7 +60,7 @@ class MasterDetailAPIView(APIView):
     def delete(self, request, master_id):
         user = request.user
         master = get_object_or_404(Master, id=master_id) 
-        if master.id != user.id or user.is_superuser:
+        if master.id != user.id or not user.is_superuser:
             return Response({'error': 'Bunu etməyə icazəniz yoxdur'}, status=status.HTTP_403_FORBIDDEN)
         
         if master:
