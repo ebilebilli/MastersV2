@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from models.master_model import Master
-from utils.otp import create_otp, send_otp, check_otp_in_redis, delete_otp_in_redis
+from utils.otp import check_otp_in_redis, delete_otp_in_redis
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
@@ -15,8 +15,6 @@ class PasswordResetRequestSerializer(serializers.Serializer):
     def save(self):
         phone_number = self.validated_data['phone_number']
         user = Master.objects.get(phone_number=phone_number)
-        code = create_otp(phone_number)
-        send_otp(phone_number, code)
         return user
 
 
@@ -32,12 +30,12 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         check_otp_in_redis(data)
         if data['new_password'] != data['new_password_two']:
-            raise serializers.ValidationError({'new_password_two': 'Şifrələr uyğun deyil.'})
+            raise serializers.ValidationError({'new_password': 'Şifrələr uyğun deyil.'})
 
         user = Master.objects.get(phone_number=data['phone_number'])
         validate_password(data['new_password'], user=user)
         return data
-
+        
     def save(self):
         phone_number = self.validated_data['phone_number']
         new_password = self.validated_data['new_password']

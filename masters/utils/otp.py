@@ -19,12 +19,6 @@ def create_otp(phone_number):
     return code
 
 
-def send_otp(phone_number, code):
-    #In next progress we need to buy sms service for real otp code
-    #This is only for test
-    return f'Telefon nömrəsi {phone_number} üçün OTP: {code}'
-
-
 def check_otp_in_redis(data):
     redis_client = redis.Redis(
             host=settings.REDIS_HOST,
