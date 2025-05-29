@@ -1,6 +1,6 @@
 import redis
 from django.core.exceptions import ValidationError
-from masters.masters import settings
+from django.conf import settings
 from random import choices
 
 
@@ -25,7 +25,7 @@ def check_otp_in_redis(data):
             port=settings.REDIS_PORT,
             db=settings.REDIS_DB
         )
-    redis_key = f'otp:{data['phone_number']}'
+    redis_key = f"otp:{data['phone_number']}"
     stored_code = redis_client.get(redis_key)
 
     if not stored_code or stored_code.decode('utf-8') != data['otp_code']:
