@@ -6,7 +6,7 @@ from core.models.city_model import City, District
 from core.models.education_model import Education
 from core.models.language_model import Language
 from services.models.category_model import Category
-from services.models.service_model import ServiceTemplate
+from services.models.service_model import Service
 
 class MasterSerializer(serializers.ModelSerializer):
     # Şəxsi məlumatlar
@@ -14,12 +14,11 @@ class MasterSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(required=True)
     phone_number = serializers.CharField(max_length=13, required=True)
     password = serializers.CharField(write_only=True, required=True)
-    password2 = serializers.CharField(write_only=True, required=True, label="Şifrəni təkrar yazın")
-    gender = serializers.ChoiceField(choices=Master.GENDER_STATUS, required=True)
+    password_two = serializers.CharField(write_only=True, required=True, label="Şifrəni təkrar yazın")
 
     # Peşə məlumatları
     profession_category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), required=True, allow_null=False)
-    profession_service = serializers.PrimaryKeyRelatedField(queryset=ServiceTemplate.objects.all(), required=True, allow_null=False)
+    profession_service = serializers.PrimaryKeyRelatedField(queryset=Service.objects.all(), required=True, allow_null=False)
     custom_profession = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
     experience = serializers.IntegerField(required=True, min_value=0)
     cities = serializers.PrimaryKeyRelatedField(many=True, queryset=City.objects.all(), required=True, allow_null=False)
@@ -49,7 +48,7 @@ class MasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Master
         fields = [
-            'full_name', 'birthday', 'phone_number', 'password', 'password2', 'gender',
+            'full_name', 'birthday', 'phone_number', 'password', 'password_two', 'gender',
             'profession_category', 'profession_service', 'custom_profession', 'experience',
             'cities', 'districts', 'education', 'education_detail', 'languages',
             'profile_picture', 'facebook_url', 'instagram_url', 'tiktok_url',
@@ -58,8 +57,8 @@ class MasterSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        if data.get('password') != data.get('password2'):
-            raise serializers.ValidationError({"password2": "Şifrələr uyğun deyil."})
+        if data.get('password') != data.get('password_two'):
+            raise serializers.ValidationError({"password_two": "Şifrələr uyğun deyil."})
 
         required_fields = ['full_name', 'birthday', 'phone_number', 'gender',
                           'profession_category', 'profession_service', 'cities',

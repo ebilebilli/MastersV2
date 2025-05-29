@@ -162,7 +162,7 @@ class Master(AbstractUser):
             self.slug = unique_slug
         
         if self.full_name:
-            self.education_detail = self.education_detail.title()
+            self.full_name = self.full_name.title()
 
         if self.education_detail:
             self.education_detail = self.education_detail.title()
