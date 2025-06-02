@@ -1,5 +1,5 @@
 from django.contrib import admin
-from reviews.models.rating_models import Rating
+from masters.reviews.models.review_models import Rating
 
 
 @admin.register(Rating)

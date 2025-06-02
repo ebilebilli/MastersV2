@@ -1,13 +1,13 @@
 from rest_framework import serializers
-from users.models.master_work_img_model import MasterWorkImage
+from reviews.models.review_img_model import ReviewWorkImage
 
 
-class MasterImageSerializer(serializers.ModelSerializer):
+class ReviewImageSerializer(serializers.ModelSerializer):
     master = serializers.PrimaryKeyRelatedField(read_only=True)  
     image_url = serializers.SerializerMethodField()
 
     class Meta:
-        model = MasterWorkImage
+        model =  ReviewWorkImage
         fields = '__all__'
 
     def get_image_url(self, obj):

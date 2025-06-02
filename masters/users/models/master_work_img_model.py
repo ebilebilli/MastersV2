@@ -4,7 +4,7 @@ from .master_model import Master
 
 class MasterWorkImage(models.Model):
     master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='master_handwork_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='masters/master_handwork_images/', blank=True, null=True)
     order = models.PositiveIntegerField(default=0) 
     uploaded_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)

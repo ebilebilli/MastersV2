@@ -7,6 +7,8 @@ from core.models.education_model import Education
 from core.models.language_model import Language
 from services.models.category_model import Category
 from services.models.service_model import Service
+from users.models.master_work_img_model import MasterWorkImage
+
 
 class MasterSerializer(serializers.ModelSerializer):
     # Şəxsi məlumatlar
@@ -106,10 +108,22 @@ class MasterSerializer(serializers.ModelSerializer):
 
     def validate_password(self, value):
         validate_password(value)
+        
         return value
 
     def validate_portfolio_images(self, value):
         for img in value:
             if img.size > 5 * 1024 * 1024:
                 raise serializers.ValidationError("Hər şəkil 5 MB-dan böyük ola bilməz.")
+        
+        if len(value) > 10:
+            raise serializers.ValidationError("Maksimum 10 şəkil yükləyə bilərsiniz")
+        
         return value
+    
+    def create(self, validated_data):
+        master_work_images = validated_data.pop('master_work_images', [])
+        master = Master.objects.create(**validated_data)
+        for img in master_work_images:
+            MasterWorkImage.objects.create(master=master, image=img)
+        return master

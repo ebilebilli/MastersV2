@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from django.db.models import Avg
 
 from .master_user_manager_model import MasterUserManager
-from reviews.models.rating_models import Rating
+from masters.reviews.models.review_models import Review
 from core.models.city_model import City, District
 from core.models.education_model import Education
 from core.models.language_model import Language
@@ -75,7 +75,7 @@ class Master(AbstractUser):
         null=True
     )
     profile_picture = models.ImageField(
-        upload_to='profile_pictures/',
+        upload_to='masters/profile_pictures/',
         null=True,
         blank=True
     )
@@ -144,12 +144,12 @@ class Master(AbstractUser):
         blank=True
     )
     @property
-    def average_rating(self):
-        return Rating.objects.filter(master=self).aggregate(avg=Avg('rating'))['avg'] or 0
+    def average_review(self):
+        return Review.objects.filter(master=self).aggregate(avg=Avg('review'))['avg'] or 0
 
     @property
-    def rating_count(self):
-        return Rating.objects.filter(master=self).count()
+    def review_count(self):
+        return Review.objects.filter(master=self).count()
     
     def save(self, *args, **kwargs):
         if not self.slug and self.full_name:
