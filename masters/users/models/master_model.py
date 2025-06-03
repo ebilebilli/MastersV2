@@ -143,35 +143,104 @@ class Master(AbstractUser):
         null=True, 
         blank=True
     )
-    @property
-    def average_review(self):
-        average = Review.objects.filter(master=self).aggregate(avg=Avg('rating'))['avg'] 
+    
+    def average_rating(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('rating'))['avg']
         if average is None:
             return ''
-        return average
+        return round(average, 2)
+
+    @property
+    def average_responsible(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('responsible'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_neat(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('neat'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_time_management(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('time_management'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_communicative(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('communicative'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_punctual(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('punctual'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_professional(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('professional'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_experienced(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('experienced'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_efficient(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('efficient'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_agile(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('agile'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
+
+    @property
+    def average_patient(self):
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('patient'))['avg']
+        if average is None:
+            return ''
+        return round(average, 2)
 
     @property
     def review_count(self):
         return Review.objects.filter(master=self).count()
-    
+        
     def save(self, *args, **kwargs):
         if not self.slug and self.full_name:
             base_slug = slugify(self.full_name)
             unique_slug = base_slug
             i = 1
-            while Master.objects.filter(slug=unique_slug).exists():
-                unique_slug = f'{base_slug}-{i}'
-                i += 1
-            self.slug = unique_slug
-        
+        while Master.objects.filter(slug=unique_slug).exists():
+            unique_slug = f'{base_slug}-{i}'
+            i += 1
+        self.slug = unique_slug
+            
         if self.full_name:
             self.full_name = self.full_name.title()
 
         if self.education_detail:
             self.education_detail = self.education_detail.title()
-        
+            
         if self.note:
             self.note = self.note.capitalize()
-        
-
+            
         super().save(*args, **kwargs)

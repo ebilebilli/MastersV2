@@ -14,3 +14,5 @@ class ReviewImageSerializer(serializers.ModelSerializer):
         if obj.image:
             return obj.image.url
         return None
+    
+    

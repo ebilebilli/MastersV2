@@ -5,7 +5,7 @@ from reviews.models.review_models import Review
 from reviews.models.review_img_model import ReviewWorkImage
 
 
-class RatingSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
     review_images = serializers.ListField(
         child=serializers.ImageField(
             validators=[FileExtensionValidator(allowed_extensions=['jpg', 'png'])]

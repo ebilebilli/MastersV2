@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a9cf0152ddc88002a7697293dd9f5dfaeb5c359984109d898e24144ea31e845e"
+            "sha256": "a34c92eb701d4386c276f5c9c1c1342130090609353e440ae1f8fcd21153c219"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -112,14 +112,6 @@
             ],
             "index": "pypi",
             "version": "==1.9.9"
-        },
-        "django-cities-light": {
-            "hashes": [
-                "sha256:0d333dd53ad85f3acfcc2c4c8c8d3ab3a7dfdcdb5a61dcff9c96c393e2781ed8",
-                "sha256:aff7052e37716d32608738a99aa0b5e4569c353ee190307d7fccf52452818ac9"
-            ],
-            "index": "pypi",
-            "version": "==3.10.1"
         },
         "djangorestframework": {
             "hashes": [

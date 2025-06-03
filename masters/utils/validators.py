@@ -49,6 +49,11 @@ def validate_birthday(value):
     
     if value < min_allowed_date:
         raise ValidationError("Doğum günü 100 ildən daha köhnə ola bilməz.")
+    
+    
+def not_only_whitespace(value):
+    if not value.strip():
+        raise ValidationError("Boşluqdan ibarət şərh göndərilə bilməz.")
 
 
 class CustomPasswordValidator:
