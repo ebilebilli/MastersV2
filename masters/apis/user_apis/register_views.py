@@ -15,6 +15,14 @@ from users.serializers.register_serializers import (
     AdditionalInformationSerializer
 )
 
+
+__all__ = [
+    'RegisterPersonalAPIView',
+    'RegisterProfessionAPIView',
+    'RegisterAdditionalAPIView'
+]
+
+
 class RegisterPersonalAPIView(APIView):
     permission_classes = [AllowAny]
     parser_classes = [JSONParser, MultiPartParser]

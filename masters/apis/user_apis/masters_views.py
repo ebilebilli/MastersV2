@@ -13,8 +13,11 @@ from utils.paginations import CustomPagination
 
 
 __all__ = [
-    'MastersListAPIView', 'MasterDetailAPIView', 'MasterListForCategoryAPIView',
-    'MasterListForServicesAPIView', 'FilteredMasterListAPIView'
+    'MastersListAPIView',
+    'MasterDetailAPIView',
+    'MasterListForCategoryAPIView',
+    'MasterListForServicesAPIView', 
+    'FilteredMasterListAPIView'
 ]
 
 

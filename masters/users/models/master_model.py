@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.db.models import Avg
+from django.core.validators import MaxLengthValidator, MinLengthValidator
 
 from .master_user_manager_model import MasterUserManager
 from masters.reviews.models.review_models import Review
@@ -96,11 +97,19 @@ class Master(AbstractUser):
         verbose_name='Cinsiyyət',
         null=True
     )
-    is_active_on_main_page = models.BooleanField(default=False)
+    is_active_on_main_page = models.BooleanField(
+        default=False
+    )
     note = models.CharField(
         max_length=1500,
         verbose_name='Qeyd',
-        null=True
+        null=True,
+         validators=[
+            az_letters_validator, 
+            not_only_whitespace,
+            MinLengthValidator(3),
+            MaxLengthValidator(1000),
+        ]
     )
     experience = models.PositiveSmallIntegerField(
         null=True,

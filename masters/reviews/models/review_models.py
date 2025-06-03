@@ -1,8 +1,7 @@
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, MaxLengthValidator, MinLengthValidator
 
 from utils.validators import az_letters_validator, not_only_whitespace
-
 
 
 class Review(models.Model):
@@ -19,7 +18,12 @@ class Review(models.Model):
     )
     comment = models.TextField(
         max_length=1000,
-        validators=[az_letters_validator, not_only_whitespace]
+        validators=[
+            az_letters_validator, 
+            not_only_whitespace,
+            MinLengthValidator(3),
+            MaxLengthValidator(1000),
+        ]
     )
     responsible = models.PositiveSmallIntegerField(
         verbose_name="Məsuliyyətli",

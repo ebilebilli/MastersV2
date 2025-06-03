@@ -1,5 +1,9 @@
 from django.urls import path
-from apis.review_apis.review_apis import *
+
+from masters.apis.review_apis.review_views import *
+
+
+app_name = 'review_apis'
 
 urlpatterns = [
     path(

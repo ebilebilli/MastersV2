@@ -1,5 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
+
 from apis.user_apis.session_views import *
 from apis.user_apis.masters_views import *
 from apis.user_apis.register_views import (
@@ -9,11 +10,9 @@ from apis.user_apis.register_views import (
 )
 
 
-
 app_name = 'user_apis'
 
-urlpatterns = [   
-                
+urlpatterns = [            
     #Register endpoints
     path(
         'register/personal/',

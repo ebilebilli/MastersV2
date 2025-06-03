@@ -54,6 +54,9 @@ def validate_birthday(value):
 def not_only_whitespace(value):
     if not value.strip():
         raise ValidationError("Boşluqdan ibarət şərh göndərilə bilməz.")
+    
+    if len(value.strip()) < 3:
+        raise ValidationError("Mətn ən azı 3 simvol olmalıdır.")
 
 
 class CustomPasswordValidator:
