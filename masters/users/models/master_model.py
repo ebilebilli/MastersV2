@@ -145,7 +145,10 @@ class Master(AbstractUser):
     )
     @property
     def average_review(self):
-        return Review.objects.filter(master=self).aggregate(avg=Avg('review'))['avg'] or 0
+        average = Review.objects.filter(master=self).aggregate(avg=Avg('rating'))['avg'] 
+        if average is None:
+            return ''
+        return average
 
     @property
     def review_count(self):
