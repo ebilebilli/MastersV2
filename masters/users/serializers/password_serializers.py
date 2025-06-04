@@ -8,30 +8,34 @@ class PasswordResetRequestSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=13, required=True)
 
     def validate_phone_number(self, value):
-        if not Master.objects.filter(phone_number=value).exists():
+        try:
+            self._user = Master.objects.get(phone_number=value)
+            return value
+        except Master.DoesNotExist:
             raise serializers.ValidationError({'error': 'Bu telefon nömrəsi ilə istifadəçi tapılmadı.'})
-        return value
-    
+            
     def save(self):
-        phone_number = self.validated_data['phone_number']
-        user = Master.objects.get(phone_number=phone_number)
-        return user
+        return self._user
 
-
-class PasswordResetConfirmSerializer(serializers.Serializer):
+class PasswordResetConfirmSerializer(serializers.ModelSerializer):
     phone_number = serializers.CharField(max_length=13, required=True)
     otp_code = serializers.CharField(max_length=6, required=True)
     new_password = serializers.CharField(write_only=True, required=True)
     new_password_two = serializers.CharField(write_only=True, required=True)
+    
+    class Meta:
+        model = Master
+        fields = '__all__'
 
     def validate(self, data):
         if not Master.objects.filter(phone_number=data['phone_number']).exists():
             raise serializers.ValidationError({'phone_number': 'Bu telefon nömrəsi ilə istifadəçi tapılmadı.'})
-
-        check_otp_in_redis(data)
+        try:
+            check_otp_in_redis(data)
+        except Exception as e:
+            raise serializers.ValidationError({'otp_code': f'OTP yoxlaması uğursuz: {str(e)}'})
         if data['new_password'] != data['new_password_two']:
             raise serializers.ValidationError({'new_password': 'Şifrələr uyğun deyil.'})
-
         user = Master.objects.get(phone_number=data['phone_number'])
         validate_password(data['new_password'], user=user)
         return data
