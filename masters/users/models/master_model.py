@@ -6,11 +6,11 @@ from django.core.validators import MaxLengthValidator, MinLengthValidator
 
 from .master_user_manager_model import MasterUserManager
 from reviews.models.review_models import Review
+from services.models.category_model import Category
+from services.models.service_model import Service
 from core.models.city_model import City, District
 from core.models.education_model import Education
 from core.models.language_model import Language
-from services.models.category_model import Category
-from services.models.service_model import Service
 from utils.validators import *
 from utils.constants import GENDER_STATUS
 
@@ -28,12 +28,14 @@ class Master(AbstractUser):
         Category,
         on_delete=models.CASCADE,
         related_name='category_masters',
+        verbose_name='Kateqoriya',
         null=True
     )
     profession_service = models.ForeignKey(
         Service,
         on_delete=models.CASCADE,
         related_name='profession_masters',
+        verbose_name='Servis',
         null=True
     )
     custom_profession = models.CharField(

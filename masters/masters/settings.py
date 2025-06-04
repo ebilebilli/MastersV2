@@ -14,7 +14,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ["*"]
+
 AUTH_USER_MODEL = 'users.Master'
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -30,11 +32,12 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     #Apps
+    'core',
     'users',
+    'reviews',
     'services',
     'orders',
-    'reviews',
-    'core'
+  
 ]
 
 MIDDLEWARE = [
