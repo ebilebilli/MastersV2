@@ -5,7 +5,7 @@ from django.db.models import Avg
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 
 from .master_user_manager_model import MasterUserManager
-from masters.reviews.models.review_models import Review
+from reviews.models.review_models import Review
 from core.models.city_model import City, District
 from core.models.education_model import Education
 from core.models.language_model import Language

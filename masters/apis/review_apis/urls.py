@@ -1,6 +1,6 @@
 from django.urls import path
 
-from masters.apis.review_apis.review_views import *
+from apis.review_apis.review_views import *
 
 
 app_name = 'review_apis'
