@@ -5,16 +5,23 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db import transaction
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 from users.serializers.login_serializer import LoginSerializer
+from users.serializers.password_serializers import PasswordResetConfirmSerializer, PasswordResetRequestSerializer
+from users.models import Master
+from users.tasks import send_otp
 
 __all__ = [
     'LoginAPIView',
-    'LogoutAPIView'
+    'LogoutAPIView',
+    'UpdateRequestPasswordAPIView',
+    'UpdateConfirmPasswordAPIView'
 ]
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
+    http_method_names = ['post']
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -36,6 +43,7 @@ class LoginAPIView(APIView):
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+    http_method_names = ['post']
 
     def post(self, request):
         refresh_token = request.data.get('refresh')
@@ -49,6 +57,56 @@ class LogoutAPIView(APIView):
             return Response({  'message': 'Uğurla çıxış etdiniz!'}, status=status.HTTP_205_RESET_CONTENT)
         except Exception:
             return Response({'error': 'Refresh token etibarsızdır.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+class UpdateRequestPasswordAPIView(APIView):
+    permission_classes = [AllowAny]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+    http_method_names = ['post']
+    
+    @transaction.atomic
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                send_otp(serializer.validated_data['phone_number'])
+                serializer.save()
+                return Response({
+                    'message': 'OTP göndərildi.'}, 
+                    status=status.HTTP_200_OK
+                    )
+            except Exception as e:
+                return Response({
+                    'error': f'OTP göndərilə bilmədi: {str(e)}'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class UpdateConfirmPasswordAPIView(APIView):
+    permission_classes = [AllowAny]
+    http_method_names = ['post']
+    
+    @transaction.atomic
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response({'message': 'Parol uğurla dəyişdirildi.'}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({
+                    'error': f'Parol dəyişdirilə bilmədi: {str(e)}'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
+    
+        
+
+            
+            
 
 
         

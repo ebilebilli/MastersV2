@@ -3,11 +3,7 @@ from rest_framework_simplejwt import views as jwt_views
 
 from apis.user_apis.session_views import *
 from apis.user_apis.masters_views import *
-from apis.user_apis.register_views import (
-    RegisterPersonalAPIView,
-    RegisterProfessionAPIView,
-    RegisterAdditionalAPIView,
-)
+from apis.user_apis.register_views import *
 
 
 app_name = 'user_apis'
@@ -43,6 +39,20 @@ urlpatterns = [
         'logout/',
         LogoutAPIView.as_view(),
         name='logout'
+    ),
+    
+    path(
+        'update/password/request',
+        UpdateRequestPasswordAPIView.as_view(),
+        name='update-password-request'
+        
+    ),
+    
+    path(
+        'update/password/confirm',
+         UpdateConfirmPasswordAPIView.as_view(),
+        name='update-password-request'
+    
     ),
 
     # Master endpoints
