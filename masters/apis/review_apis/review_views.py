@@ -8,7 +8,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 
 from reviews.models.review_models import Review
-from masters.users.models.master_model import Master
+from users.models.master_model import Master
 from reviews.serializers.review_serializers import ReviewSerializer
 from utils.paginations import CustomPagination
 from utils.permissions import HeHasPermission

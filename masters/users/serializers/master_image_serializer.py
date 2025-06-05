@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models.master_work_img_model import MasterWorkImage
+from models.master_work_img_model import MasterWorkImage
 
 
 class MasterImageSerializer(serializers.ModelSerializer):
