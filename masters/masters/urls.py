@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('apis.user_apis.urls', namespace='user_apis')),
     path('api/v1/', include('apis.review_apis.urls', namespace='review_apis')),
+    
 ]
 
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)

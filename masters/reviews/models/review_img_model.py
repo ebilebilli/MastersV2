@@ -13,4 +13,4 @@ class ReviewWorkImage(models.Model):
         ordering = ['order'] 
         
     # def __str__(self):
-    #     return f'{self.review.user.full_name} shared images for {self.review.master}'
+    #     return f'{self.review.user.full_name} add review with images for {self.review.master}'

@@ -1,23 +1,40 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import JSONParser, MultiPartParser
 
 from users.models.master_model import Master
 from users.models.master_work_img_model import MasterWorkImage
 from users.serializers.master_image_serializer import MasterImageSerializer
+from utils.permissions import HeHasPermission
 
+
+__all__ = [
+    'WorkImagesForMasterAPIView',
+    'DeleteMasterWorkImageAPIView',
+]
 
 class WorkImagesForMasterAPIView(APIView):
+    parser_classes = [JSONParser, MultiPartParser]
+    http_method_names = ['get', 'post']
+
     def get(self, request, master_id):
-        master = Master.objects.get(is_active_on_main_page=True, id=master_id)
+        master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
         images = MasterWorkImage.objects.filter(master=master)
         serializer = MasterImageSerializer(images, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, master_id):
         try:
-            master = Master.objects.get(is_active_on_main_page=True, id=master_id)
+            master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
+            user = request.user
+            if user != master:
+                return Response({'error': 'İcazəniz yoxdur'})
+            
         except Master.DoesNotExist:
-            return Response({"detail": "Usta tapılmadı."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Usta tapılmadı.'}, status=status.HTTP_404_NOT_FOUND)
 
         existing_image_count = MasterWorkImage.objects.filter(master=master).count()
         incoming_data = request.data
@@ -27,9 +44,8 @@ class WorkImagesForMasterAPIView(APIView):
         if existing_image_count + new_count > 10:
             return Response(
                 {
-                    "detail": f"Usta maksimum 10 şəkil yükləyə bilər. Hal-hazırda {existing_image_count} şəkli var, sən {new_count} əlavə etmək istəyirsən."
-                },
-                status=status.HTTP_400_BAD_REQUEST
+                    'error': f'Usta maksimum 10 şəkil yükləyə bilər. Hal-hazırda {existing_image_count} şəkli var, sən {new_count} əlavə etmək istəyirsən.'
+                },status=status.HTTP_400_BAD_REQUEST
             )
 
         serializer = MasterImageSerializer(data=new_images, many=isinstance(incoming_data, list))
@@ -41,9 +57,14 @@ class WorkImagesForMasterAPIView(APIView):
     
     
 class DeleteMasterWorkImageAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, HeHasPermission]
+    http_method_names = ['delete']
+
     def delete(self, request, image_id):
-        image = MasterWorkImage.objects.get(id=image_id)
-        if image:
+        try:
+            image = MasterWorkImage.objects.get(id=image_id)
             image.delete()
-            return Response({'message: Sekil silindi'}, status=status.HTTP_204_NO_CONTENT)
-        return Response({'error: Sekil tapilmadi'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message: Şəkil silindi'}, status=status.HTTP_204_NO_CONTENT)
+        except image.DoesNotExist():
+            return Response({'error: Şəkil tapılmadı'}, status=status.HTTP_400_BAD_REQUEST)
