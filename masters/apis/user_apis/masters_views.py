@@ -28,8 +28,8 @@ class MastersListAPIView(APIView):
     def get(self, request):
         pagination = self.pagination_class()
         masters = Master.objects.annotate(
-        avg_rating=Avg('ratings__rating'),
-        count_ratings=Count('ratings') 
+        avg_rating=Avg('reviews__rating'),
+        count_ratings=Count('reviews') 
     ).filter(is_active_on_main_page=True)
         
         if not masters.exists():
@@ -119,7 +119,6 @@ class FilteredMasterListAPIView(APIView):
         city_id = request.query_params.get('city_id')
         district_id = request.query_params.get('district_id')
         language_id = request.query_params.get('language_id')
-        gender = request.query_params.get('gender')
         min_experience = request.query_params.get('min_experience')
         min_rating = request.query_params.get('min_rating')
 
@@ -143,9 +142,6 @@ class FilteredMasterListAPIView(APIView):
         if language_id:
             filters &= Q(languages__id=language_id)
 
-        if gender:
-            filters &= Q(gender=gender)
-
         if min_experience:
             try:
                 min_experience = int(min_experience)
@@ -154,8 +150,8 @@ class FilteredMasterListAPIView(APIView):
                 pass
 
         masters = Master.objects.filter(filters).annotate(
-            avg_rating=Avg('ratings__rating'),
-            count_ratings=Count('ratings')
+            avg_rating=Avg('reviews__rating'),
+            count_ratings=Count('reviews')
         ).distinct()
 
         if min_rating:

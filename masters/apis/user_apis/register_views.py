@@ -61,8 +61,8 @@ class RegisterProfessionAPIView(APIView):
 
     @transaction.atomic
     def post(self, request):
-        phone_number = request.data.get('phone_number')
-        master = Master.objects.filter(phone_number=phone_number, is_active_on_main_page=False).first()
+        user_id = request.user.id
+        master = Master.objects.filter(id=user_id, is_active_on_main_page=False).first()
         if not master:
             return Response({
                 'error': 'İstifadəçi tapılmadı və ya qeydiyyatın bu mərhələsinə uyğun deyil.'
@@ -84,8 +84,8 @@ class RegisterAdditionalAPIView(APIView):
 
     @transaction.atomic
     def post(self, request):
-        phone_number = request.data.get('phone_number')
-        master = Master.objects.filter(phone_number=phone_number, is_active_on_main_page=False).first()
+        user_id = request.user.id
+        master = Master.objects.filter(id=user_id, is_active_on_main_page=False).first()
         if not master:
             return Response({
                 'error': 'İstifadəçi tapılmadı və ya qeydiyyatın bu mərhələsinə uyğun deyil.'
@@ -97,8 +97,6 @@ class RegisterAdditionalAPIView(APIView):
             master.is_active_on_main_page = True
             master.save()
 
-            return Response({
-                'message': 'Profiliniz uğurla yaradıldı!',
-                'phone_number': master.phone_number
-            }, status=status.HTTP_200_OK)
+            return Response({'message': 'Profiliniz uğurla yaradıldı!'}, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

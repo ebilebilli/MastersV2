@@ -42,17 +42,15 @@ urlpatterns = [
     ),
     
     path(
-        'update/password/request',
-        UpdateRequestPasswordAPIView.as_view(),
-        name='update-password-request'
-        
+        'password/reset/request/',
+        PasswordResetRequestAPIView.as_view(),
+        name='password-reset-request'  
     ),
     
     path(
-        'update/password/confirm',
-         UpdateConfirmPasswordAPIView.as_view(),
-        name='update-password-request'
-    
+        'password/reset/confirm/',
+        PasswordResetConfirmAPIView.as_view(),
+        name='password-reset-confirm'
     ),
 
     # Master endpoints

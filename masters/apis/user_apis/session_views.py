@@ -15,8 +15,8 @@ from users.tasks import send_otp
 __all__ = [
     'LoginAPIView',
     'LogoutAPIView',
-    'UpdateRequestPasswordAPIView',
-    'UpdateConfirmPasswordAPIView'
+    'PasswordResetRequestAPIView',
+    'PasswordResetConfirmAPIView'
 ]
 
 class LoginAPIView(APIView):
@@ -59,7 +59,7 @@ class LogoutAPIView(APIView):
             return Response({'error': 'Refresh token etibarsızdır.'}, status=status.HTTP_400_BAD_REQUEST)
         
         
-class UpdateRequestPasswordAPIView(APIView):
+class PasswordResetRequestAPIView(APIView):
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     http_method_names = ['post']
@@ -83,7 +83,7 @@ class UpdateRequestPasswordAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class UpdateConfirmPasswordAPIView(APIView):
+class PasswordResetConfirmAPIView(APIView):
     permission_classes = [AllowAny]
     http_method_names = ['post']
     

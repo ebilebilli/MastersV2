@@ -232,24 +232,24 @@ class Master(AbstractUser):
     @property
     def review_count(self):
         return Review.objects.filter(master=self).count()
-        
+    
     def save(self, *args, **kwargs):
         if not self.slug and self.full_name:
             base_slug = slugify(self.full_name)
             unique_slug = base_slug
             i = 1
-        while Master.objects.filter(slug=unique_slug).exists():
-            unique_slug = f'{base_slug}-{i}'
-            i += 1
-        self.slug = unique_slug
-            
+            while Master.objects.filter(slug=unique_slug).exists():
+                unique_slug = f'{base_slug}-{i}'
+                i += 1
+            self.slug = unique_slug
+
         if self.full_name:
             self.full_name = self.full_name.title()
 
         if self.education_detail:
             self.education_detail = self.education_detail.title()
-            
+
         if self.note:
             self.note = self.note.capitalize()
-            
+
         super().save(*args, **kwargs)

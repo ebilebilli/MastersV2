@@ -17,16 +17,12 @@ class PasswordResetRequestSerializer(serializers.Serializer):
     def save(self):
         return self._user
 
-class PasswordResetConfirmSerializer(serializers.ModelSerializer):
+class PasswordResetConfirmSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=13, required=True)
     otp_code = serializers.CharField(max_length=6, required=True)
     new_password = serializers.CharField(write_only=True, required=True)
     new_password_two = serializers.CharField(write_only=True, required=True)
     
-    class Meta:
-        model = Master
-        fields = '__all__'
-
     def validate(self, data):
         if not Master.objects.filter(phone_number=data['phone_number']).exists():
             raise serializers.ValidationError({'phone_number': 'Bu telefon nömrəsi ilə istifadəçi tapılmadı.'})

@@ -78,21 +78,27 @@ class CustomPasswordValidator:
 class SocialURLValidator:
     @staticmethod
     def facebook(value):
-        if value and not value.startswith('https://www.facebook.com/'):
+        if value and not (value.startswith('https://facebook.com/') or value.startswith('https://www.facebook.com/')):
             raise ValidationError("Facebook URL düzgün formatda deyil.")
+    
     @staticmethod
     def instagram(value):
-        if value and not value.startswith('https://www.instagram.com/'):
+        if value and not (value.startswith('https://instagram.com/') or value.startswith('https://www.instagram.com/')):
             raise ValidationError("Instagram URL düzgün formatda deyil.")
+    
     @staticmethod
     def tiktok(value):
-        if value and not value.startswith('https://www.tiktok.com/'):
+        if value and not (value.startswith('https://tiktok.com/') or value.startswith('https://www.tiktok.com/')):
             raise ValidationError("TikTok URL düzgün formatda deyil.")
+    
     @staticmethod
     def linkedin(value):
-        if value and not value.startswith('https://www.linkedin.com/'):
+        if value and not (value.startswith('https://linkedin.com/') or value.startswith('https://www.linkedin.com/')):
             raise ValidationError("LinkedIn URL düzgün formatda deyil.")
+    
     @staticmethod
     def youtube(value):
-        if value and not (value.startswith('https://www.youtube.com/') or value.startswith('https://youtu.be/')):
+        if value and not (value.startswith('https://youtube.com/') or 
+                          value.startswith('https://www.youtube.com/') or 
+                          value.startswith('https://youtu.be/')):
             raise ValidationError("YouTube URL düzgün formatda deyil.")
