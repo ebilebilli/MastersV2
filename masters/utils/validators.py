@@ -10,13 +10,18 @@ phone_validator = RegexValidator(
     message="Mobil nömrə düzgün daxil edilməyib. 50 123 45 67 formatında daxil edin."
 )
 
-az_letters_validator = RegexValidator(
+az_letters_name_validator = RegexValidator(
     regex=r'^[a-zA-ZəƏöÖüÜşŞçÇğĞıİ\s]+$',
     message='Yalnız Azərbaycan hərfləri ilə yazılmalıdır.'
 )
 
+az_letters_validator = RegexValidator(
+    regex=r'^[a-zA-ZəƏöÖüÜşŞçÇğĞıİ\s.,!?-]+$',
+    message='Yalnız Azərbaycan hərfləri ilə yazılmalıdır.'
+)
+
 def validate_full_name(value):
-    az_letters_validator(value)
+    az_letters_name_validator(value)
 
     if len(value.strip()) < 7:
         raise ValidationError('Ad və soyad cəmi ən azı 7 simvol olmalıdır.')

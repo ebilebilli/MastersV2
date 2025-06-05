@@ -65,7 +65,7 @@ urlpatterns = [
         MasterDetailAPIView.as_view(),
         name='master-detail'
     ),
-
+    
     path(
         'masters/category/<int:category_id>/', 
         MasterListForCategoryAPIView.as_view(), 

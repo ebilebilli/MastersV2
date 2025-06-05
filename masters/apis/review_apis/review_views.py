@@ -13,6 +13,7 @@ from reviews.serializers.review_serializers import ReviewSerializer
 from utils.paginations import CustomPagination
 from utils.permissions import HeHasPermission
 
+
 __all__ = [
     'ReviewsForMasterAPIView',
     'CreateReviewAPIView',
@@ -24,6 +25,7 @@ __all__ = [
 class ReviewsForMasterAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class = CustomPagination
+    http_method_names = ['get']
 
     def get(self, request, master_id):
         try:
@@ -43,10 +45,16 @@ class CreateReviewAPIView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     parser_classes = [JSONParser, MultiPartParser]
+    http_method_names = ['post']
 
     transaction.atomic
     def post(self, request, master_id):
         user = request.user
+        # if master.user.id == request.user.id:
+        #     return Response({
+        #         'error': 'Özünüzü dəyərləndirmə əlavə edə bilməzsiniz.'
+        #         }, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
             master = Master.objects.get(is_active_on_main_page=True, id=master_id)
         except Master.DoesNotExist:
@@ -56,13 +64,14 @@ class CreateReviewAPIView(APIView):
         if serializer.is_valid():
             serializer.save(user=user, master=master)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'error': 'Zəhmət olmasa bütün məcburi sahələri doldurun'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateReviewAPIView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, HeHasPermission]
     parser_classes = [JSONParser, MultiPartParser]
+    http_method_names = ['patch']
 
     @transaction.atomic
     def patch(self, request, review_id):
@@ -77,6 +86,7 @@ class UpdateReviewAPIView(APIView):
 class DeleteReviewAPIView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, HeHasPermission]
+    http_method_names = ['delete']
 
     @transaction.atomic
     def delete(self, request, review_id):
@@ -88,6 +98,7 @@ class DeleteReviewAPIView(APIView):
 class FilterReviewAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class = CustomPagination
+    http_method_names = ['get']
 
     def get(self, request, master_id):
         pagination = self.pagination_class()

@@ -14,7 +14,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True
     )
-
+    master = serializers.PrimaryKeyRelatedField(read_only=True)
+    
     class Meta:
         model = Review
         exclude = ['user']

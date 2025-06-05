@@ -11,21 +11,25 @@ urlpatterns = [
         ReviewsForMasterAPIView.as_view(),
         name="master-reviews-list"
     ),
+    
     path(
         'masters/<int:master_id>/reviews/create/',
          CreateReviewAPIView.as_view(),
-         name='create-review'
+         name='create-reviews'
     ),
+
     path(
         'masters/reviews/<int:review_id>/update/',
         UpdateReviewAPIView.as_view(),
-        name='udpate-review'
+        name='udpate-reviews'
     ),
+
     path(
-        'master/reviews/<int:review_id>/delete/',
+        'masters/reviews/<int:review_id>/delete/',
         DeleteReviewAPIView.as_view(),
-        name='delete-review'
+        name='delete-reviews'
     ),
+
     path(
         'masters/<int:master_id>/reviews/filter/',
         FilterReviewAPIView.as_view(),
