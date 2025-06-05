@@ -128,7 +128,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_THROTTLE_RATES': {
         'user': '100/day',
-        'anon': '10/hour'# Hər istifadəçi gündə 100 sorğu
+        'anon': '10/hour'
     },
 }
 
@@ -152,16 +152,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=200),  
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME_MINUTES'))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME_DAYS'))),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',  
-    'SIGNING_KEY': SECRET_KEY, 
+    'ALGORITHM': os.getenv('JWT_ALGORITHM'),
+    'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
-    'AUTH_HEADER_TYPES': ('Bearer',), 
-    'USER_ID_FIELD': 'id',  
-    'USER_ID_CLAIM': 'user_id', 
+    'AUTH_HEADER_TYPES': (os.getenv('JWT_AUTH_HEADER_TYPE')),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
     'TOKEN_TYPE_CLAIM': 'token_type',
     'JTI_CLAIM': 'jti',
 }
