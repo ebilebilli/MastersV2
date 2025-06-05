@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models.master_model import Master
+from masters.users.models.master_model import Master
 
 
 class MasterSerializer(serializers.ModelSerializer):

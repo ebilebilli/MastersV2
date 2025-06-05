@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from users.models import Master, MasterWorkImage
+from users.models.master_model import Master
+from users.models.master_work_img_model import MasterWorkImage
 
 
 class MasterAdmin(UserAdmin):

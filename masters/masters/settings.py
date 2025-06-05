@@ -15,7 +15,6 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ["*"]
 
-AUTH_USER_MODEL = 'users.Master'
 
 # Application definition
 INSTALLED_APPS = [
@@ -33,12 +32,13 @@ INSTALLED_APPS = [
 
     #Apps
     'core',
+    'services',
     'users',
     'reviews',
-    'services',
-    'orders',
-  
+    'orders'
 ]
+
+AUTH_USER_MODEL = 'users.Master'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

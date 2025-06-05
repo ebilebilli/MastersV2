@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from users.models.master_model import Master
+from masters.users.models.master_model import Master
 from utils.otp import check_otp_in_redis, delete_otp_in_redis
 
 

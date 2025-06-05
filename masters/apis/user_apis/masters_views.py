@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q, Avg
 from django.db.models import Count
 
-from users.models.master_model import Master
+from masters.users.models.master_model import Master
 from users.serializers.master_serializer import MasterSerializer
 from services.models.category_model import Category
 from services.models.service_model import Service
