@@ -55,25 +55,23 @@ urlpatterns = [
         MastersListAPIView.as_view(), 
         name='masters-list'
     ),
+
+    path(
+        'masters/top/', 
+        TopRatedMastersListAPIView.as_view(), 
+        name='masters-top-rated-list '
+    ),
+
     path(
         'masters/<int:master_id>/', 
         MasterDetailAPIView.as_view(),
         name='master-detail'
     ), 
+   
     path(
-        'masters/category/<int:category_id>/', 
-        MasterListForCategoryAPIView.as_view(), 
-        name='masters-by-category'
-    ),
-    path(
-        'masters/service/<int:service_id>/', 
-        MasterListForServicesAPIView.as_view(), 
-        name='masters-by-service'
-    ),
-    path(
-        'masters/filter/', 
+        'masters/search/', 
         FilteredMasterListAPIView.as_view(), 
-        name='masters-filter'
+        name='masters-search'
     ),
     
     #Master handwork images endpoints

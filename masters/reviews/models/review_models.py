@@ -1,5 +1,10 @@
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator, MaxLengthValidator, MinLengthValidator
+from django.core.validators import(
+    MinValueValidator, 
+    MaxValueValidator, 
+    MaxLengthValidator, 
+    MinLengthValidator
+    )
 
 from utils.validators import az_letters_validator, not_only_whitespace
 

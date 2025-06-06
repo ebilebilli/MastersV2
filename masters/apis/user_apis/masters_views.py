@@ -7,16 +7,13 @@ from django.db.models import Count
 
 from users.models.master_model import Master
 from users.serializers.master_serializer import MasterSerializer
-from services.models.category_model import Category
-from services.models.service_model import Service
-from utils.paginations import CustomPagination
+from utils.paginations import CustomPagination, PaginationForMainPage
 
 
 __all__ = [
     'MastersListAPIView',
+    'TopRatedMastersListAPIView',
     'MasterDetailAPIView',
-    'MasterListForCategoryAPIView',
-    'MasterListForServicesAPIView', 
     'FilteredMasterListAPIView'
 ]
 
@@ -40,7 +37,28 @@ class MastersListAPIView(APIView):
         serializer = MasterSerializer(result_page, many=True)
         paginated_response = pagination.get_paginated_response(serializer.data).data
         return Response(paginated_response, status=status.HTTP_200_OK)
-    
+
+
+class TopRatedMastersListAPIView(APIView):
+    permission_classes = [AllowAny]
+    pagination_class =  PaginationForMainPage
+
+    def get(self, request):
+        pagination = self.pagination_class()
+        masters = Master.objects.annotate(
+        avg_rating=Avg('reviews__rating'),
+        count_ratings=Count('reviews') 
+    ).filter(is_active_on_main_page=True).order_by('-avg_rating', '-count_ratings', '-last_login')
+        
+        if not masters.exists():
+            return Response({
+                'error': 'Hal-hazırda aktif bir usta yoxdur'
+            }, status=status.HTTP_404_NOT_FOUND)
+        result_page = pagination.paginate_queryset(masters, request)
+        serializer = MasterSerializer(result_page, many=True)
+        paginated_response = pagination.get_paginated_response(serializer.data).data
+        return Response(paginated_response, status=status.HTTP_200_OK)
+
 
 class MasterDetailAPIView(APIView):
     def get(self, request, master_id):
@@ -70,42 +88,6 @@ class MasterDetailAPIView(APIView):
             master.delete()
             return Response({'message': 'Hesab silindi'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'error': 'Hesab tapılmadı'}, status=status.HTTP_404_NOT_FOUND)
-
-
-class MasterListForCategoryAPIView(APIView):
-    permission_classes = [AllowAny]
-    pagination_class =  CustomPagination
-
-    def get(self, request, category_id):
-        pagination = self.pagination_class()
-        category = get_object_or_404(Category, id=category_id)
-        masters =  Master.objects.filter(profession_category=category, is_active_on_main_page=True)
-        if not masters.exists():
-            return Response({
-                'error': 'Hal-hazırda bu kateqoriyaya uyğun aktif bir usta yoxdur'
-            },status=status.HTTP_404_NOT_FOUND)
-        result_page = pagination.paginate_queryset(masters, request)
-        serializer = MasterSerializer(result_page, many=True)
-        paginated_response = pagination.get_paginated_response(serializer.data).data
-        return Response(paginated_response, status=status.HTTP_200_OK)
-
-
-class MasterListForServicesAPIView(APIView):
-    permission_classes = [AllowAny]
-    pagination_class =  CustomPagination
-
-    def get(self, request, service_id):
-        pagination = self.pagination_class()
-        service = get_object_or_404(Service, id=service_id)
-        masters =  Master.objects.filter(profession_service=service, is_active_on_main_page=True)
-        if not masters.exists():
-            return Response({
-                'error': 'Hal-hazırda bu servisə uyğun aktif bir usta yoxdur'
-            },status=status.HTTP_404_NOT_FOUND)
-        result_page = pagination.paginate_queryset(masters, request)
-        serializer = MasterSerializer(result_page, many=True)
-        paginated_response = pagination.get_paginated_response(serializer.data).data
-        return Response(paginated_response, status=status.HTTP_200_OK)
 
 
 class FilteredMasterListAPIView(APIView):

@@ -29,7 +29,8 @@ class ReviewsForMasterAPIView(APIView):
 
     def get(self, request, master_id):
         try:
-            master = Master.objects.get(is_active_on_main_page=True, id=master_id)
+            master = Master.objects.filter(
+                is_active_on_main_page=True, id=master_id).order_by('-created_at')
         except Master.DoesNotExist:
             return Response({'detail': 'Usta tapılmadı.'}, status=status.HTTP_404_NOT_FOUND)
         
