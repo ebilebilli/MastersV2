@@ -21,6 +21,7 @@ __all__ = [
 class MastersListAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class =  CustomPagination
+    http_method_names = ['get']
 
     def get(self, request):
         pagination = self.pagination_class()
@@ -42,6 +43,7 @@ class MastersListAPIView(APIView):
 class TopRatedMastersListAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class =  PaginationForMainPage
+    http_method_names = ['get']
 
     def get(self, request):
         pagination = self.pagination_class()
@@ -61,6 +63,8 @@ class TopRatedMastersListAPIView(APIView):
 
 
 class MasterDetailAPIView(APIView):
+    http_method_names = ['get', 'patch', 'delete']
+
     def get(self, request, master_id):
         master = get_object_or_404(Master, id=master_id, is_active_on_main_page=True)
         serializer = MasterSerializer(master)
@@ -93,6 +97,7 @@ class MasterDetailAPIView(APIView):
 class FilteredMasterListAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class = CustomPagination
+    http_method_names = ['get']
 
     def get(self, request):
         query = request.query_params.get('q')

@@ -26,6 +26,7 @@ __all__ = [
 class RegisterPersonalAPIView(APIView):
     permission_classes = [AllowAny]
     parser_classes = [JSONParser, MultiPartParser]
+    http_method_names = ['post']
 
     @transaction.atomic
     def post(self, request):
@@ -58,6 +59,7 @@ class RegisterProfessionAPIView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser, MultiPartParser]
+    http_method_names = ['post']
 
     @transaction.atomic
     def post(self, request):
@@ -81,6 +83,7 @@ class RegisterAdditionalAPIView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser, MultiPartParser]
+    http_method_names = ['post']
 
     @transaction.atomic
     def post(self, request):

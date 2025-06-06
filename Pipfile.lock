@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a34c92eb701d4386c276f5c9c1c1342130090609353e440ae1f8fcd21153c219"
+            "sha256": "506fe40f651b54a14d06ea65ec85c4eb491c3107787fa0039a7edd2dad807328"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -51,6 +51,14 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==5.5.2"
+        },
+        "certifi": {
+            "hashes": [
+                "sha256:0a816057ea3cdefcef70270d2c515e4506bbc954f417fa5ade2021213bb8f0c6",
+                "sha256:30350364dfe371162649852c63336a15c70c6510c2ad5015b21c2345311805f3"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==2025.4.26"
         },
         "click": {
             "hashes": [
@@ -113,6 +121,15 @@
             "index": "pypi",
             "version": "==1.9.9"
         },
+        "django-elasticsearch-dsl": {
+            "hashes": [
+                "sha256:423784a4af336d109c3763622f1edc4973664cb5154beb55b3ff9390c1e4525e",
+                "sha256:64ee0612ced6d57515a6b7f29f1a3e1c2eea1996a6226fc72079a95c067b27ca"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8'",
+            "version": "==8.0"
+        },
         "djangorestframework": {
             "hashes": [
                 "sha256:bea7e9f6b96a8584c5224bfb2e4348dfb3f8b5e34edbecb98da258e892089361",
@@ -146,6 +163,30 @@
             "index": "pypi",
             "markers": "python_version >= '3.6'",
             "version": "==1.21.10"
+        },
+        "elastic-transport": {
+            "hashes": [
+                "sha256:192718f498f1d10c5e9aa8b9cf32aed405e469a7f0e9d6a8923431dbb2c59fb8",
+                "sha256:5edef32ac864dca8e2f0a613ef63491ee8d6b8cfb52881fa7313ba9290cac6d2"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==8.17.1"
+        },
+        "elasticsearch": {
+            "hashes": [
+                "sha256:1a8c8b5ec3ce5be88f96d2f898375671648e96272978bce0dee3137d9326aabb",
+                "sha256:998035f17a8c1fba7ae26b183dca797dcf95db86da6a7ecba56d31afc40f07c7"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==8.18.1"
+        },
+        "elasticsearch-dsl": {
+            "hashes": [
+                "sha256:0522c5bb20c7abae69855109e650bf1166d486cbf706b5e1b29c28936a9102a3",
+                "sha256:763465dba9eae166add10567e924c65730aa122819b08bfe9a077e91b13b30d1"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==8.18.0"
         },
         "inflection": {
             "hashes": [
@@ -521,6 +562,14 @@
             "index": "pypi",
             "markers": "python_version >= '3.6'",
             "version": "==4.1.1"
+        },
+        "urllib3": {
+            "hashes": [
+                "sha256:414bc6535b787febd7567804cc015fee39daab8ad86268f1310a9250697de466",
+                "sha256:4e16665048960a0900c702d4a66415956a584919c03361cac9f1df5c5dd7e813"
+            ],
+            "markers": "python_version >= '3.9'",
+            "version": "==2.4.0"
         },
         "vine": {
             "hashes": [

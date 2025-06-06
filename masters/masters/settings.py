@@ -30,13 +30,15 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
+    'django_elasticsearch_dsl',
 
     #Apps
     'core',
     'services',
     'users',
     'reviews',
-    'orders'
+    'orders',
+    'search'
 ]
 
 AUTH_USER_MODEL = 'users.Master'
@@ -166,3 +168,9 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 }
 
+#Elasticsearch settings
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'elasticsearch:9200'  
+    }
+}
