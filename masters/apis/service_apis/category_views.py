@@ -4,9 +4,7 @@ from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
 
 from services.models.category_model import Category
-from services.models.service_model import Service
 from services.serializers.category_serializer import CategorySerializer
-from services.serializers.service_serializer import ServiceSerializer
 from utils.paginations import CustomPagination
 from users.models.master_model import Master
 from users.serializers.master_serializer import MasterSerializer

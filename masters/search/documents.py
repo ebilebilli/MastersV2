@@ -62,6 +62,7 @@ class MasterDocument(Document):
             'tiktok_url',
             'linkedin_url',
             'youtube_url',
+            'created_at',
             'slug',
         ]
         related_models = [Category, Service, City, District]
@@ -70,7 +71,7 @@ class MasterDocument(Document):
         return instance.average_rating() or None
     
     def prepare_review_count(self, instance):
-        return instance.review_count() or  None
+        return instance.review_count or  None
 
     def prepare_profession_category(self, instance):
         if instance.profession_category:

@@ -100,6 +100,9 @@ class Master(AbstractUser):
     is_active_on_main_page = models.BooleanField(
         default=False
     )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
     note = models.CharField(
         max_length=1500,
         verbose_name='Qeyd',

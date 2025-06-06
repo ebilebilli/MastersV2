@@ -171,6 +171,8 @@ SIMPLE_JWT = {
 #Elasticsearch settings
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'elasticsearch:9200'  
+        'hosts': os.getenv("ELASTICSEARCH_HOST"),
     }
 }
+
+ELASTICSEARCH_HOST = os.getenv("ELASTICSEARCH_HOST")
