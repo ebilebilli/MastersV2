@@ -26,13 +26,13 @@ class Master(AbstractUser):
 
     profession_category = models.ForeignKey(
         Category,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='category_masters',
         null=True
     )
     profession_service = models.ForeignKey(
         Service,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='profession_masters',
         null=True
     )
@@ -54,7 +54,7 @@ class Master(AbstractUser):
     )
     education = models.ForeignKey(
         Education,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='education_masters',
         null=True
     )

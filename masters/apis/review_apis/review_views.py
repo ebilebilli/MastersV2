@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from reviews.models.review_models import Review
 from users.models.master_model import Master
 from reviews.serializers.review_serializers import ReviewSerializer
-from utils.paginations import CustomPagination
+from utils.paginations import PaginationForMainPage
 from utils.permissions import HeHasPermission
 
 
@@ -22,9 +22,10 @@ __all__ = [
     'FilterReviewAPIView'
 ]
 
+
 class ReviewsForMasterAPIView(APIView):
     permission_classes = [AllowAny]
-    pagination_class = CustomPagination
+    pagination_class = PaginationForMainPage
     http_method_names = ['get']
 
     def get(self, request, master_id):
@@ -98,7 +99,7 @@ class DeleteReviewAPIView(APIView):
         
 class FilterReviewAPIView(APIView):
     permission_classes = [AllowAny]
-    pagination_class = CustomPagination
+    pagination_class = PaginationForMainPage
     http_method_names = ['get']
 
     def get(self, request, master_id):

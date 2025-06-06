@@ -4,7 +4,7 @@ from apis.service_apis.category_views import *
 from apis.service_apis.service_views import *
 
 
-app_name = 'review_apis'
+app_name = 'service_apis'
 
 urlpatterns = [
     #Category endpoints

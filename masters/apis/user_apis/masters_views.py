@@ -92,7 +92,7 @@ class MasterDetailAPIView(APIView):
 
 class FilteredMasterListAPIView(APIView):
     permission_classes = [AllowAny]
-    pagination_class =  CustomPagination
+    pagination_class = CustomPagination
 
     def get(self, request):
         query = request.query_params.get('q')
@@ -103,27 +103,22 @@ class FilteredMasterListAPIView(APIView):
         language_id = request.query_params.get('language_id')
         min_experience = request.query_params.get('min_experience')
         min_rating = request.query_params.get('min_rating')
+        sort_by = request.query_params.get('sort_by', 'newest')
 
         filters = Q(is_active_on_main_page=True)
 
         if query:
             filters &= Q(full_name__icontains=query) | Q(custom_profession__icontains=query)
-
         if category_id:
             filters &= Q(profession_category__id=category_id)
-
         if service_id:
             filters &= Q(profession_service__id=service_id)
-
         if city_id:
             filters &= Q(cities__id=city_id)
-
         if district_id:
             filters &= Q(districts__id=district_id)
-
         if language_id:
             filters &= Q(languages__id=language_id)
-
         if min_experience:
             try:
                 min_experience = int(min_experience)
@@ -143,13 +138,21 @@ class FilteredMasterListAPIView(APIView):
             except ValueError:
                 pass
 
+        order_by = {
+            'newest': '-created_at',
+            'highest_rating': '-avg_rating',
+            'most_reviewed': '-count_ratings'
+        }.get(sort_by, '-created_at')
+        masters = masters.order_by(order_by)
+
         if not masters.exists():
             return Response(
                 {'detail': 'Uyğun usta tapılmadı.'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
         pagination = self.pagination_class()
         result_page = pagination.paginate_queryset(masters, request)
-        serializer = MasterSerializer(result_page, many=True)
+        serializer = MasterSerializer(result_page, many=True, context={'request': request})
         paginated_response = pagination.get_paginated_response(serializer.data).data
         return Response(paginated_response, status=status.HTTP_200_OK)
