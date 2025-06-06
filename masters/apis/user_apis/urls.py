@@ -68,11 +68,11 @@ urlpatterns = [
         name='master-detail'
     ), 
    
-    path(
-        'masters/search/', 
-        FilteredMasterListAPIView.as_view(), 
-        name='masters-search'
-    ),
+    # path(
+    #     'masters/search/', 
+    #     FilteredMasterListAPIView.as_view(), 
+    #     name='masters-search'
+    # ),
     
     #Master handwork images endpoints
     path(
