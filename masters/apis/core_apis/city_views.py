@@ -1,10 +1,15 @@
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from django.shortcuts import get_object_or_404
 
 from core.models.city_model import City, District
 from core.serializers.city_serializers import CitySerializer, DistrictSerializer
+
+
+__all__ = [
+    'CityListAPIView',
+    'DistrictListAPIView'
+]
 
 
 class CityListAPIView(APIView):
@@ -17,7 +22,7 @@ class CityListAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
         
 
-class DistrictsForCityAPIView(APIView):
+class DistrictListAPIView(APIView):
     permission_classes = [AllowAny]
     http_method_names = ['get']
 
