@@ -76,10 +76,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         
     def save(self):
         """
-        Sets the new password for the user and deletes the OTP.
-
-        Returns:
-            Master: The updated user instance.
+        Handles saving portfolio images along with master profile creation.
         """
         phone_number = self.validated_data['phone_number']
         new_password = self.validated_data['new_password']
