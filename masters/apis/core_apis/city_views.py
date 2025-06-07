@@ -1,6 +1,8 @@
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from django.core.cache import cache
+from django.conf import settings
 
 from core.models.city_model import City, District
 from core.serializers.city_serializers import CitySerializer, DistrictSerializer
@@ -23,8 +25,14 @@ class CityListAPIView(APIView):
     http_method_names = ['get']
 
     def get(self, request):
+        cache_key = f'city_list'
+        cached_data = cache.set(cache_key)
+        if cached_data:
+            return Response(cached_data, status=status.HTTP_200_OK)
+        
         cities = City.objects.all()
         serializer = CitySerializer(cities, many=True)
+        cache.set(cache_key, serializer.data, settings.TIMEOUT)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
 
@@ -39,8 +47,14 @@ class DistrictListAPIView(APIView):
     http_method_names = ['get']
 
     def get(self, request):
+        cache_key = f'district_list'
+        cached_data = cache.set(cache_key)
+        if cached_data:
+            return Response(cached_data, status=status.HTTP_200_OK)
+        
         districts = District.objects.all()
         serializer = DistrictSerializer(districts, many=True)
+        cache.set(cache_key, serializer.data, settings.TIMEOUT)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
         

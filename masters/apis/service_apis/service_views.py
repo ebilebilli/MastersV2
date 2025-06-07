@@ -2,6 +2,8 @@ from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
+from django.core.cache import cache
+from django.conf import settings
 
 from services.models.category_model import Category
 from services.models.service_model import Service
@@ -32,14 +34,18 @@ class ServicesForCategoryAPIView(APIView):
     http_method_names = ['get']
 
     def get(self, request, category_id):
-        try:
-            category = get_object_or_404(Category, id=category_id)
-            services = Service.objects.filter(category=category)
-            serializer = ServiceSerializer(services, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Category.DoesNotExist:
-            return Response({'error': 'Axtarılan kategoriya yoxdur'})
-
+        cache_key = f'services_for_category_{category_id}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data, status=status.HTTP_200_OK)
+      
+        category = get_object_or_404(Category, id=category_id)
+        services = Service.objects.filter(category=category)
+        serializer = ServiceSerializer(services, many=True)
+        cache.set(cache_key, serializer.data, timeout=settings.TIMEOUT)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+      
+    
 
 class MasterListForServicesAPIView(APIView):
     """
