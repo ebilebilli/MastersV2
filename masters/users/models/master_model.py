@@ -16,6 +16,15 @@ from utils.constants import GENDER_STATUS
 
 
 class Master(AbstractUser):
+    MASTER = 'Master'
+    CUSTOMER = 'Customer'
+    NONE = 'None'
+
+    ROLE_STATUS = [
+    (MASTER, 'Usta'),
+    (CUSTOMER, 'Müştəri'),
+    ]
+
     username = None
     first_name = None
     last_name = None
@@ -23,6 +32,8 @@ class Master(AbstractUser):
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['full_name']
     objects = MasterUserManager()
+    is_master = models.BooleanField(default=False, verbose_name='Status')
+    user_role = models.CharField(choices=ROLE_STATUS)
 
     profession_category = models.ForeignKey(
         Category,
@@ -143,7 +154,6 @@ class Master(AbstractUser):
         validators=[SocialURLValidator.youtube]
     )
     slug = models.SlugField(
-        unique=True, 
         blank=True, 
         editable=False
     )
@@ -165,6 +175,9 @@ class Master(AbstractUser):
         if average is None:
             return ''
         return round(average, 2)
+
+    def __str__(self):
+        return f'{self.full_name} in {self.user_role} in role'
 
     @property
     def average_responsible(self):

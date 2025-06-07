@@ -1,10 +1,24 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import FileExtensionValidator
+
 from users.models import Master
 from users.models.master_work_img_model import MasterWorkImage
 from core.models.city_model import City, District
 from core.models.language_model import Language
+
+
+__all__ = [
+    'UserRoleSelectionSerializer',
+    'PersonalInformationSerializer',
+    'AdditionalInformationSerializer',
+    'CustomerRegistrationSerializer'
+]
+
+class UserRoleSelectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Master
+        fields = ['user_role']
 
 
 class PersonalInformationSerializer(serializers.ModelSerializer):
@@ -167,3 +181,25 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
         for img in master_work_images:
             MasterWorkImage.objects.create(master=master, image=img)
         return master
+
+
+class CustomerRegistrationSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(write_only=True, required=True, label="Şifrəni təkrar yazın")
+    class Meta:
+        model = Master
+        fields = ['full_name', 'birthday', 'phone_number', 'password', 'password2', 'gender']
+    
+    def validate(self, data):
+        """
+        Ensure both password fields match.
+        """
+        if data['password'] != data['password2']:
+            raise serializers.ValidationError({"password2": "Şifrələr uyğun deyil."})
+        return data
+    
+    def validate_password(self, value):
+        """
+        Apply Django's default password validation.
+        """
+        validate_password(value)  
+        return value

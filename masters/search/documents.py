@@ -63,6 +63,8 @@ class MasterDocument(Document):
             'linkedin_url',
             'youtube_url',
             'created_at',
+            'is_master',
+            'user_role',
             'slug',
         ]
         related_models = [Category, Service, City, District]

@@ -30,10 +30,16 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Rəy mətni tələb olunur')
         
         rating = data.get('rating')
+
         if rating < 0 or rating > 5:
             raise serializers.ValidationError('1-5 arasında olmalıdır')
 
         return data
+
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+       
     
     def validate_count_of_label(self, data):
         rated_fields = [

@@ -54,12 +54,9 @@ class CreateReviewAPIView(APIView):
     """
     post:
     Create a new review for a master.
-
-    Only authenticated users can create reviews. 
     The review will be linked to the user and the given master.
     """
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
     parser_classes = [JSONParser, MultiPartParser]
     http_method_names = ['post']
 

@@ -8,7 +8,7 @@ class MasterAdmin(UserAdmin):
     # Admin paneldə göstəriləcək sahələr
     list_display = (
         'full_name', 'phone_number', 'profession_category', 'profession_service',
-        'is_active_on_main_page', 'is_active', 'date_joined'
+        'is_active_on_main_page', 'is_active', 'date_joined', 'is_master', 'user_role'
     )
     
     # Axtarış üçün sahələr
@@ -17,13 +17,13 @@ class MasterAdmin(UserAdmin):
     # Filtrləmə üçün sahələr
     list_filter = (
         'profession_category', 'profession_service', 'cities', 'districts',
-        'gender', 'is_active_on_main_page', 'is_active'
+        'gender', 'is_active_on_main_page', 'is_active', 'is_master', 'user_role', 
     )
     
     # Admin formasında göstəriləcək sahələr və qruplar
     fieldsets = (
         (None, {
-            'fields': ('phone_number', 'password')
+            'fields': ('phone_number', 'password', 'is_master', 'user_role', )
         }),
         ('Şəxsi məlumatlar', {
             'fields': (
@@ -57,7 +57,7 @@ class MasterAdmin(UserAdmin):
         'classes': ('wide',),
         'fields': (
             'phone_number', 'password1', 'password2', 'full_name',
-            'birthday', 'gender', 'profession_category', 'profession_service',
+            'birthday', 'gender', 'is_master', 'user_role',  'profession_category', 'profession_service',
             'cities', 'districts', 'education', 'languages', 'is_active_on_main_page'
         )
     }),

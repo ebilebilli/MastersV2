@@ -12,6 +12,11 @@ app_name = 'user_apis'
 urlpatterns = [            
     #Register endpoints
     path(
+        'register/role/',
+        RegisterRoleSelectionAPIView.as_view(),
+        name='register-role-selection'
+    ),
+    path(
         'register/personal/',
         RegisterPersonalAPIView.as_view(),
         name='register-personal'
