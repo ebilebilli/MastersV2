@@ -12,15 +12,17 @@ from users.serializers.register_serializers import(
     UserRoleSelectionSerializer,
     PersonalInformationSerializer,
     ProfessionInformationSerializer,
-    AdditionalInformationSerializer
+    AdditionalInformationSerializer,
+    CustomerRegistrationSerializer
 )
 
 
 __all__ = [
+    'RegisterRoleSelectionAPIView',
     'RegisterPersonalAPIView',
     'RegisterProfessionAPIView',
     'RegisterAdditionalAPIView',
-    'RegisterRoleSelectionAPIView'
+    'RegisterCustomerAPIView'
 ]
 
 class RegisterRoleSelectionAPIView(APIView):
@@ -148,11 +150,36 @@ class RegisterAdditionalAPIView(APIView):
             master.is_active_on_main_page = True
             master.is_master = True
             master.save()
-
             return Response({'message': 'Profiliniz uğurla yaradıldı!'}, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
+class RegisterCustomerAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['post']
 
+    @transaction.atomic
+    def post(self, request):
+        if request.user.user_role != Master.CUSTOMER: 
+            return Response({
+                'error': 'Bu qeydiyyat səhifəsi yalnız müştərilər üçündür.'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = CustomerRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            customer = request.user 
+            customer.phone_number = serializer.validated_data['phone_number']
+            customer.full_name = serializer.validated_data['full_name']
+            customer.birthday = serializer.validated_data['birthday']
+            customer.gender = serializer.validated_data['gender']
+            customer.set_password(serializer.validated_data['password'])
+            customer.save()
+
+            return Response({
+                'message': 'Qeydiyyat uğurla tamamlandı',
+                'phone_number': customer.phone_number,
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

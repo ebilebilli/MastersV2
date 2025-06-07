@@ -203,3 +203,11 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
         """
         validate_password(value)  
         return value
+    
+    def create(self, validated_data):
+        validated_data.pop('password2') 
+        password = validated_data.pop('password')
+        user = Master(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user

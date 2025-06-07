@@ -31,7 +31,11 @@ urlpatterns = [
         RegisterAdditionalAPIView.as_view(),
         name='register-additional'
     ),
-    
+    path(
+        'register/customer/',
+        RegisterCustomerAPIView.as_view(),
+        name='register-customer'
+    ),
     #Session endpoints
     path(
         "login/",

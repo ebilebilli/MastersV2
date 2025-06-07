@@ -102,19 +102,13 @@ class PasswordResetRequestAPIView(APIView):
     
 
 class PasswordResetConfirmAPIView(APIView):
-    """
-    API endpoint to confirm password reset with OTP and new password.
-    """
     permission_classes = [AllowAny]
     http_method_names = ['post']
     
     @transaction.atomic
     def post(self, request):
-        """
-        Handle POST request to reset the user's password using OTP.
-        """
         serializer = PasswordResetConfirmSerializer(data=request.data)
-        
+    
         if serializer.is_valid():
             try:
                 serializer.save()
