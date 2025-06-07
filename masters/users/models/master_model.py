@@ -157,6 +157,10 @@ class Master(AbstractUser):
     )
     
     def average_rating(self):
+        """
+        Returns the average rating for the master based on all associated reviews.
+        Returns an empty string if no ratings are available.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('rating'))['avg']
         if average is None:
             return ''
@@ -164,6 +168,9 @@ class Master(AbstractUser):
 
     @property
     def average_responsible(self):
+        """
+        Returns the average 'responsible' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('responsible'))['avg']
         if average is None:
             return ''
@@ -171,6 +178,9 @@ class Master(AbstractUser):
 
     @property
     def average_neat(self):
+        """
+        Returns the average 'neat' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('neat'))['avg']
         if average is None:
             return ''
@@ -178,6 +188,9 @@ class Master(AbstractUser):
 
     @property
     def average_time_management(self):
+        """
+        Returns the average 'time_management' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('time_management'))['avg']
         if average is None:
             return ''
@@ -185,6 +198,9 @@ class Master(AbstractUser):
 
     @property
     def average_communicative(self):
+        """
+        Returns the average 'communicative' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('communicative'))['avg']
         if average is None:
             return ''
@@ -192,6 +208,9 @@ class Master(AbstractUser):
 
     @property
     def average_punctual(self):
+        """
+        Returns the average 'punctual' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('punctual'))['avg']
         if average is None:
             return ''
@@ -199,6 +218,9 @@ class Master(AbstractUser):
 
     @property
     def average_professional(self):
+        """
+        Returns the average 'professional' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('professional'))['avg']
         if average is None:
             return ''
@@ -206,6 +228,9 @@ class Master(AbstractUser):
 
     @property
     def average_experienced(self):
+        """
+        Returns the average 'experienced' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('experienced'))['avg']
         if average is None:
             return ''
@@ -213,6 +238,9 @@ class Master(AbstractUser):
 
     @property
     def average_efficient(self):
+        """
+        Returns the average 'efficient' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('efficient'))['avg']
         if average is None:
             return ''
@@ -220,6 +248,9 @@ class Master(AbstractUser):
 
     @property
     def average_agile(self):
+        """
+        Returns the average 'agile' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('agile'))['avg']
         if average is None:
             return ''
@@ -227,6 +258,9 @@ class Master(AbstractUser):
 
     @property
     def average_patient(self):
+        """
+        Returns the average 'patient' score from reviews.
+        """
         average = Review.objects.filter(master=self).aggregate(avg=Avg('patient'))['avg']
         if average is None:
             return ''
@@ -234,9 +268,18 @@ class Master(AbstractUser):
 
     @property
     def review_count(self):
+        """
+        Returns the total number of reviews for this master.
+        """
         return Review.objects.filter(master=self).count()
     
     def save(self, *args, **kwargs):
+        """
+        Custom save method to:
+        - Auto-generate a unique slug from the full name if not set.
+        - Title-case the full_name and education_detail.
+        - Capitalize the note field.
+        """
         if not self.slug and self.full_name:
             base_slug = slugify(self.full_name)
             unique_slug = base_slug
