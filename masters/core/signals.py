@@ -21,11 +21,11 @@ def clear_district_caches(sender, **kwargs):
 
 @receiver(post_save, sender=Education)
 @receiver(post_delete, sender=Education)
-def clear_district_caches(sender, **kwargs):
+def clear_education_caches(sender, **kwargs):
     cache.delete('education_list')
 
 
 @receiver(post_save, sender=Language)
 @receiver(post_delete, sender=Language)
-def clear_district_caches(sender, **kwargs):
+def clear_language_caches(sender, **kwargs):
     cache.delete('language_list')
