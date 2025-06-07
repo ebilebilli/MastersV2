@@ -44,6 +44,7 @@ wcwidth = "==0.2.13"
 elasticsearch-dsl = "*"
 django-elasticsearch-dsl = "*"
 elasticsearch = "*"
+django-redis = "*"
 
 [dev-packages]
 
