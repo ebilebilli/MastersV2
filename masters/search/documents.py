@@ -9,6 +9,12 @@ from users.models.master_model import Master
 
 @registry.register_document
 class MasterDocument(Document):
+    """
+    Elasticsearch document for indexing and searching Master instances.
+    
+    Includes nested fields for related models such as Category, Service, City, and District.
+    Also indexes computed fields like average rating and review count.
+    """
     profession_category = fields.ObjectField(properties={
         'id': fields.IntegerField(),
         'name': fields.TextField(),
@@ -46,6 +52,11 @@ class MasterDocument(Document):
         }
 
     class Django:
+        """
+        Configuration for linking this Document with the Django model.
+        
+        Specifies the model, fields to be indexed, and related models to watch for updates.
+        """
         model = Master
         fields = [
             'full_name',
