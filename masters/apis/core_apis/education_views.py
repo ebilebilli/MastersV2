@@ -11,6 +11,13 @@ __all__ = [
 ]
 
 class EducationListAPIView(APIView):
+    """
+    get:
+    Returns a list of all education entries.
+
+    This endpoint retrieves all `Education` objects from the database
+    and returns them serialized in JSON format.
+    """
     permission_classes = [AllowAny]
     http_method_names = ['get']
 

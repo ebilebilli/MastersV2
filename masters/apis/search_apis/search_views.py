@@ -12,6 +12,27 @@ __all__ = [
 es_client = Elasticsearch(hosts=[settings.ELASTICSEARCH_HOST])
 
 class SearchAPIView(APIView):
+    """
+    get:
+    Search and filter masters using Elasticsearch.
+
+    This endpoint allows users to search for masters using multiple filter parameters.
+    Results are fetched from the Elasticsearch index named "masters" and paginated.
+
+    Query Parameters:
+    - `search` (str, optional): A text-based query for full name, profession, city, etc.
+    - `profession_category_id` (int, optional): Filter by profession category ID.
+    - `profession_service_id` (int, optional): Filter by profession service ID.
+    - `city_id` (int, optional): Filter by city ID (nested in `cities` field).
+    - `district_id` (int, optional): Filter by district ID (nested in `districts` field).
+    - `experience` (int, optional): Filter by exact years of experience.
+    - `ordering` (str, optional): Field to sort by (e.g. `"experience"`, `"full_name.keyword"`).
+    - `page` (int, optional): Page number for pagination.
+    - `page_size` (int, optional): Number of results per page (default is 10, max 100).
+
+    Response:
+    A paginated list of matched masters with relevant details.
+    """
     permission_classes = [AllowAny]
     pagination_class = CustomPagination
     http_method_names = ['get']

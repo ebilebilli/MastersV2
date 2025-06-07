@@ -16,6 +16,16 @@ __all__ = [
 ]
 
 class CategoryListAPIView(APIView):
+    """
+    get:
+    Retrieve a list of all available service categories.
+
+    This endpoint returns all categories from the database.
+    
+    Returns:
+    - 200 OK with a list of categories.
+    - 404 Not Found if no categories exist.
+    """
     permission_classes = [AllowAny]
     http_method_names = ['get']
 
@@ -29,6 +39,20 @@ class CategoryListAPIView(APIView):
 
 
 class MasterListForCategoryAPIView(APIView):
+    """
+    get:
+    Retrieve a paginated list of active masters for a given category.
+
+    This endpoint returns all active masters associated with the specified category ID.
+    Pagination is applied to the result set.
+
+    Path Parameters:
+    - category_id (int): The ID of the category.
+
+    Returns:
+    - 200 OK with a paginated list of active masters.
+    - 404 Not Found if the category or any matching master is not found.
+    """
     permission_classes = [AllowAny]
     pagination_class =  CustomPagination
 

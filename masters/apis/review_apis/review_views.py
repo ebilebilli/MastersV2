@@ -24,6 +24,13 @@ __all__ = [
 
 
 class ReviewsForMasterAPIView(APIView):
+    """
+    get:
+    Retrieve all reviews for a given master.
+
+    This endpoint fetches all reviews for the specified master (by master_id),
+    with pagination applied.
+    """
     permission_classes = [AllowAny]
     pagination_class = PaginationForMainPage
     http_method_names = ['get']
@@ -44,6 +51,13 @@ class ReviewsForMasterAPIView(APIView):
 
     
 class CreateReviewAPIView(APIView):
+    """
+    post:
+    Create a new review for a master.
+
+    Only authenticated users can create reviews. 
+    The review will be linked to the user and the given master.
+    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     parser_classes = [JSONParser, MultiPartParser]
@@ -70,6 +84,12 @@ class CreateReviewAPIView(APIView):
 
 
 class UpdateReviewAPIView(APIView):
+    """
+    patch:
+    Update an existing review.
+
+    Only the review owner or a user with permission can update a review.
+    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, HeHasPermission]
     parser_classes = [JSONParser, MultiPartParser]
@@ -86,6 +106,12 @@ class UpdateReviewAPIView(APIView):
     
     
 class DeleteReviewAPIView(APIView):
+    """
+    delete:
+    Delete a review.
+
+    Only the review owner or a user with permission can delete a review.
+    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, HeHasPermission]
     http_method_names = ['delete']
@@ -98,6 +124,14 @@ class DeleteReviewAPIView(APIView):
         
         
 class FilterReviewAPIView(APIView):
+    """
+    get:
+    Retrieve filtered and sorted reviews for a master.
+
+    You can filter the reviews by order:
+    - `order=newest` (default): newest first
+    - `order=oldest`: oldest first
+    """
     permission_classes = [AllowAny]
     pagination_class = PaginationForMainPage
     http_method_names = ['get']

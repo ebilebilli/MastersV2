@@ -13,6 +13,12 @@ __all__ = [
 
 
 class CityListAPIView(APIView):
+    """
+    get:
+    Returns a list of all cities.
+
+    This endpoint retrieves all `City` objects from the database and returns them in JSON format.
+    """
     permission_classes = [AllowAny]
     http_method_names = ['get']
 
@@ -23,6 +29,12 @@ class CityListAPIView(APIView):
         
 
 class DistrictListAPIView(APIView):
+    """
+    get:
+    Returns a list of all districts.
+
+    This endpoint retrieves all `District` objects from the database and returns them in JSON format.
+    """
     permission_classes = [AllowAny]
     http_method_names = ['get']
 

@@ -11,6 +11,13 @@ __all__ = [
 ]
 
 class LanguageListAPIView(APIView):
+    """
+    get:
+    Returns a list of all languages.
+
+    This endpoint retrieves all `Language` objects from the database
+    and returns them serialized in JSON format.
+    """
     permission_classes = [AllowAny]
     http_method_names = ['get']
 

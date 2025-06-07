@@ -17,6 +17,17 @@ __all__ = [
 ]
 
 class ServicesForCategoryAPIView(APIView):
+    """
+    get:
+    Retrieve a list of services associated with a given category.
+
+    Path Parameters:
+    - category_id (int): The ID of the category.
+
+    Returns:
+    - 200 OK with a list of services.
+    - 404 Not Found if the category does not exist.
+    """
     permission_classes = [AllowAny]
     http_method_names = ['get']
 
@@ -31,6 +42,17 @@ class ServicesForCategoryAPIView(APIView):
 
 
 class MasterListForServicesAPIView(APIView):
+    """
+    get:
+    Retrieve a paginated list of active masters for a given service.
+
+    Path Parameters:
+    - service_id (int): The ID of the service.
+
+    Returns:
+    - 200 OK with a paginated list of active masters.
+    - 404 Not Found if the service does not exist or no masters are available.
+    """
     permission_classes = [AllowAny]
     pagination_class =  CustomPagination
 

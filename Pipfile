@@ -41,8 +41,9 @@ unidecode = "==1.4.0"
 uritemplate = "==4.1.1"
 vine = "==5.1.0"
 wcwidth = "==0.2.13"
-django-elasticsearch-dsl = "*"
 elasticsearch-dsl = "*"
+django-elasticsearch-dsl = "*"
+elasticsearch = "*"
 
 [dev-packages]
 
