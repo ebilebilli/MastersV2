@@ -26,13 +26,13 @@ class CityListAPIView(APIView):
 
     def get(self, request):
         cache_key = f'city_list'
-        cached_data = cache.set(cache_key)
+        cached_data = cache.get(cache_key)
         if cached_data:
             return Response(cached_data, status=status.HTTP_200_OK)
         
         cities = City.objects.all()
         serializer = CitySerializer(cities, many=True)
-        cache.set(cache_key, serializer.data, settings.TIMEOUT)
+        cache.set(cache_key, serializer.data, timeout=settings.TIMEOUT)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
 
@@ -48,13 +48,13 @@ class DistrictListAPIView(APIView):
 
     def get(self, request):
         cache_key = f'district_list'
-        cached_data = cache.set(cache_key)
+        cached_data = cache.get(cache_key)
         if cached_data:
             return Response(cached_data, status=status.HTTP_200_OK)
         
         districts = District.objects.all()
         serializer = DistrictSerializer(districts, many=True)
-        cache.set(cache_key, serializer.data, settings.TIMEOUT)
+        cache.set(cache_key, serializer.data, timeout=settings.TIMEOUT)
         return Response(serializer.data, status=status.HTTP_200_OK)
         
         

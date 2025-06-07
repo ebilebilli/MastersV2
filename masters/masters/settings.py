@@ -181,11 +181,11 @@ ELASTICSEARCH_HOST = os.getenv("ELASTICSEARCH_HOST")
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/{os.environ.get('REDIS_DB')}",
+        'LOCATION': f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/{os.getenv('REDIS_DB')}",
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
 }
 
-TIMEOUT = os.getenv('TIMEOUT')
+TIMEOUT = int(os.getenv('TIMEOUT'))

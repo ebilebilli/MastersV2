@@ -25,7 +25,7 @@ class LanguageListAPIView(APIView):
 
     def get(self, request):
         cache_key = f'language_list'
-        cached_data = cache.set(cache_key)
+        cached_data = cache.get(cache_key)
         if cached_data:
             return Response(cached_data, status=status.HTTP_200_OK)
         

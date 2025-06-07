@@ -25,12 +25,12 @@ class EducationListAPIView(APIView):
 
     def get(self, request):
         cache_key = f'education_list'
-        cached_data = cache.set(cache_key)
+        cached_data = cache.get(cache_key)
         if cached_data:
             return Response(cached_data, status=status.HTTP_200_OK)
         
         educations = Education.objects.all()
         serializer = EducationSerializer(educations, many=True)
-        cache.set(cache_key, serializer.data, settings.TIMEOUT)
+        cache.set(cache_key, serializer.data, timeout=settings.TIMEOUT)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
