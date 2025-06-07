@@ -4,27 +4,52 @@ from django.core.validators import FileExtensionValidator
 from users.models import Master
 from users.models.master_work_img_model import MasterWorkImage
 from core.models.city_model import City, District
-from core.models.education_model import Education
 from core.models.language_model import Language
 
 
 class PersonalInformationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for collecting personal information during registration.
+
+    Fields include:
+    - full name
+    - birthday
+    - phone number
+    - password and password confirmation
+    - gender
+    """
     password2 = serializers.CharField(write_only=True, required=True, label="Şifrəni təkrar yazın")
     class Meta:
         model = Master
         fields = ['full_name', 'birthday', 'phone_number', 'password', 'password2', 'gender']
     
     def validate(self, data):
+        """
+        Ensure both password fields match.
+        """
         if data['password'] != data['password2']:
             raise serializers.ValidationError({"password2": "Şifrələr uyğun deyil."})
         return data
     
     def validate_password(self, value):
+        """
+        Apply Django's default password validation.
+        """
         validate_password(value)  
         return value
     
     
 class ProfessionInformationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for professional information during master registration.
+
+    Includes fields:
+    - profession category and service
+    - experience
+    - cities and optionally districts
+    - custom profession if 'Other' selected
+    """
+    
     cities = serializers.PrimaryKeyRelatedField(many=True, queryset=City.objects.all(), required=True)
     districts = serializers.PrimaryKeyRelatedField(many=True, queryset=District.objects.all(), required=False,)
     
@@ -33,6 +58,13 @@ class ProfessionInformationSerializer(serializers.ModelSerializer):
         fields = ['profession_category', 'profession_service', 'experience', 'cities', 'districts','custom_profession']
         
     def validate(self, data):
+        """
+        Performs:
+        - Required field check
+        - Service-category match validation
+        - If 'Other' service selected, `custom_profession` is required
+        - Districts allowed only if Baku is selected
+        """
         required_fields = ['profession_category', 'profession_service', 'cities']
         for field in required_fields:
             if not data.get(field):
@@ -63,6 +95,17 @@ class ProfessionInformationSerializer(serializers.ModelSerializer):
 
 
 class AdditionalInformationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for collecting additional profile information.
+
+    Includes:
+    - education, education_detail
+    - known languages
+    - profile picture and social links
+    - portfolio image uploads
+    - average rating info (read-only)
+    """
+    
     languages = serializers.PrimaryKeyRelatedField(many=True, queryset=Language.objects.all(), required=True)
     portfolio_images = serializers.ListField(
         child=serializers.ImageField(
@@ -84,6 +127,10 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
         ]
     
     def validate(self, data):
+        """
+        - Ensures at least one language is selected
+        - Validates education detail requirement logic
+        """
         if not data.get('languages'):
             raise serializers.ValidationError({"languages": "Zəhmət olmasa, dil biliklərini daxil edin."})
 
@@ -99,6 +146,9 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
         return data
 
     def validate_portfolio_images(self, value):
+        """
+        Validates uploaded image size and count.
+        """
         for img in value:
             if img.size > 5 * 1024 * 1024:  
                 raise serializers.ValidationError("Hər şəkil 5 MB-dan böyük ola bilməz.")
@@ -109,6 +159,9 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
         return value
     
     def create(self, validated_data):
+        """
+        Handles saving portfolio images along with master profile creation.
+        """
         master_work_images = validated_data.pop('master_work_images', [])
         master = Master.objects.create(**validated_data)
         for img in master_work_images:
