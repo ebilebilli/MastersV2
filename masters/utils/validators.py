@@ -21,6 +21,10 @@ az_letters_validator = RegexValidator(
 )
 
 def validate_full_name(value):
+    """
+    Validate a full name ensuring it contains only Azerbaijani letters,
+    is at least 7 characters long, and contains a space between first and last name.
+    """
     az_letters_name_validator(value)
 
     if len(value.strip()) < 7:
@@ -36,6 +40,13 @@ def validate_full_name(value):
 
 
 def validate_birthday(value):
+    """
+    Validate birthday date ensuring:
+    - It is not a future date.
+    - The user is at least 13 years old.
+    - The birth date is not older than 100 years.
+    Accepts date object or string in DD-MM-YYYY format.
+    """
     today = timezone.now().date()
     min_allowed_date = today - timedelta(days=365*100)
     min_allowed_age = today - timedelta(days=365 * 13)
@@ -57,6 +68,9 @@ def validate_birthday(value):
     
     
 def not_only_whitespace(value):
+    """
+    Validate that the input is not just whitespace and has a minimum length of 3 characters.
+    """
     if not value.strip():
         raise ValidationError("Boşluqdan ibarət şərh göndərilə bilməz.")
     
@@ -65,6 +79,13 @@ def not_only_whitespace(value):
 
 
 class CustomPasswordValidator:
+    """
+    Custom password validator enforcing that password contains at least:
+    - One letter
+    - One digit
+    - One special character from !@#$%^&*(),.?":{}|<>
+    """
+    
     def validate(self, password, user=None):
         if not password:
             raise ValidationError("Şifrə məcburi xanadır.")
@@ -81,6 +102,10 @@ class CustomPasswordValidator:
 
 
 class SocialURLValidator:
+    """
+    Validator class for common social media URLs ensuring correct URL formats.
+    """
+    
     @staticmethod
     def facebook(value):
         if value and not (value.startswith('https://facebook.com/') or value.startswith('https://www.facebook.com/')):
