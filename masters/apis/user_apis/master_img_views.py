@@ -17,6 +17,14 @@ __all__ = [
 ]
 
 class WorkImagesForMasterAPIView(APIView):
+    """
+    get:
+    Retrieve a list of work images for a specific master.
+
+    post:
+    Upload one or more new work images for the authenticated master.
+    Limits the total image count to 10.
+    """
     parser_classes = [JSONParser, MultiPartParser]
     http_method_names = ['get', 'post']
 
@@ -57,6 +65,17 @@ class WorkImagesForMasterAPIView(APIView):
     
     
 class DeleteMasterWorkImageAPIView(APIView):
+    """
+    delete:
+    Delete a master work image by its ID.
+
+    Path Parameters:
+    - image_id (int): The ID of the image to delete.
+
+    Returns:
+    - 204 No Content if deleted.
+    - 400 Bad Request if image not found.
+    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, HeHasPermission]
     http_method_names = ['delete']

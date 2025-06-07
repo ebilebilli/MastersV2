@@ -18,6 +18,10 @@ __all__ = [
 
 
 class MastersListAPIView(APIView):
+    """
+    get:
+    List all active masters with their average rating and number of reviews.
+    """
     permission_classes = [AllowAny]
     pagination_class =  CustomPagination
     http_method_names = ['get']
@@ -40,6 +44,10 @@ class MastersListAPIView(APIView):
 
 
 class TopRatedMastersListAPIView(APIView):
+    """
+    get:
+    Return a list of top-rated active masters sorted by rating, review count, and last login.
+    """
     permission_classes = [AllowAny]
     pagination_class =  PaginationForMainPage
     http_method_names = ['get']
@@ -62,6 +70,16 @@ class TopRatedMastersListAPIView(APIView):
 
 
 class MasterDetailAPIView(APIView):
+    """
+    get:
+    Retrieve a master's details by ID.
+
+    patch:
+    Update the master. Only the master themselves or a superuser can perform this.
+
+    delete:
+    Delete the master. Only the master themselves or a superuser can perform this.
+    """
     http_method_names = ['get', 'patch', 'delete']
 
     def get(self, request, master_id):
