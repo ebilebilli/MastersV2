@@ -20,6 +20,10 @@ __all__ = [
 ]
 
 class LoginAPIView(APIView):
+    """
+    API endpoint for user login using phone number and password.
+    Returns access and refresh JWT tokens upon successful authentication.
+    """
     permission_classes = [AllowAny]
     http_method_names = ['post']
 
@@ -41,11 +45,18 @@ class LoginAPIView(APIView):
 
 
 class LogoutAPIView(APIView):
+    """
+    API endpoint for user logout.
+    Blacklists the provided refresh token to invalidate it.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     http_method_names = ['post']
 
     def post(self, request):
+        """
+        Handle POST request to blacklist the refresh token and log the user out.
+        """
         refresh_token = request.data.get('refresh')
 
         try:
@@ -60,12 +71,19 @@ class LogoutAPIView(APIView):
         
         
 class PasswordResetRequestAPIView(APIView):
+    """
+    API endpoint to request a password reset OTP via phone number.
+    Applies throttling to limit request rate.
+    """
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     http_method_names = ['post']
     
     @transaction.atomic
     def post(self, request):
+        """
+        Handle POST request to send an OTP for password reset.
+        """
         serializer = PasswordResetRequestSerializer(data=request.data)
         if serializer.is_valid():
             try:
@@ -84,11 +102,17 @@ class PasswordResetRequestAPIView(APIView):
     
 
 class PasswordResetConfirmAPIView(APIView):
+    """
+    API endpoint to confirm password reset with OTP and new password.
+    """
     permission_classes = [AllowAny]
     http_method_names = ['post']
     
     @transaction.atomic
     def post(self, request):
+        """
+        Handle POST request to reset the user's password using OTP.
+        """
         serializer = PasswordResetConfirmSerializer(data=request.data)
         
         if serializer.is_valid():

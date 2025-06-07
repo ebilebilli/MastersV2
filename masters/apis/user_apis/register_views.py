@@ -24,6 +24,10 @@ __all__ = [
 
 
 class RegisterPersonalAPIView(APIView):
+    """
+    Step 1 of registration:
+    Create a new Master with personal information.
+    """
     permission_classes = [AllowAny]
     parser_classes = [JSONParser, MultiPartParser]
     http_method_names = ['post']
@@ -56,6 +60,10 @@ class RegisterPersonalAPIView(APIView):
 
 
 class RegisterProfessionAPIView(APIView):
+    """
+    Step 2 of registration:
+    Update professional information for existing inactive Master.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser, MultiPartParser]
@@ -80,6 +88,10 @@ class RegisterProfessionAPIView(APIView):
     
 
 class RegisterAdditionalAPIView(APIView):
+    """
+    Step 3 of registration:
+    Add additional info and activate the Master profile.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser, MultiPartParser]
