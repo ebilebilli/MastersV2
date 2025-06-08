@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from users.models.master_model import Master
+from users.models.master_model import CustomerUser
 from users.models.master_work_img_model import MasterWorkImage
 
 
-class MasterAdmin(UserAdmin):
+class CustomerUserAdmin(UserAdmin):
     # Admin paneldə göstəriləcək sahələr
     list_display = (
         'full_name', 'phone_number', 'profession_category', 'profession_service',
@@ -88,5 +88,5 @@ class MasterWorkImageAdmin(admin.ModelAdmin):
     get_master_name.short_description = 'Usta adı'
 
 
-admin.site.register(Master, MasterAdmin)
+admin.site.register(CustomerUser, CustomerUserAdmin)
 admin.site.register(MasterWorkImage, MasterWorkImageAdmin)

@@ -8,6 +8,7 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'master',
+        'customer',
         'username',
         'rating',
         'created_at',
@@ -19,7 +20,7 @@ class ReviewAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Əsas məlumatlar', {
-            'fields': ('master', 'user', 'username', 'rating', 'comment')
+            'fields': ('master', 'customer', 'username', 'rating', 'comment')
         }),
         ('Dəyərləndirmə kriteriyaları', {
             'fields': (

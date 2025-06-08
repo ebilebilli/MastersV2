@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import FileExtensionValidator
 
-from users.models import Master
+from users.models import CustomerUser
 from users.models.master_work_img_model import MasterWorkImage
 from core.models.city_model import City, District
 from core.models.language_model import Language
@@ -11,14 +11,20 @@ from core.models.language_model import Language
 __all__ = [
     'UserRoleSelectionSerializer',
     'PersonalInformationSerializer',
+    'ProfessionInformationSerializer',
     'AdditionalInformationSerializer',
     'CustomerRegistrationSerializer'
 ]
 
 class UserRoleSelectionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Master
+        model = CustomerUser
         fields = ['user_role']
+    
+    def validate_user_role(self, value):
+        if value not in [CustomerUser.MASTER, CustomerUser.CUSTOMER]:
+            raise serializers.ValidationError("Yalnız 'Master' və ya 'Customer' dəyərləri qəbul edilir.")
+        return value
 
 
 class PersonalInformationSerializer(serializers.ModelSerializer):
@@ -34,7 +40,7 @@ class PersonalInformationSerializer(serializers.ModelSerializer):
     """
     password2 = serializers.CharField(write_only=True, required=True, label="Şifrəni təkrar yazın")
     class Meta:
-        model = Master
+        model = CustomerUser
         fields = ['full_name', 'birthday', 'phone_number', 'password', 'password2', 'gender']
     
     def validate(self, data):
@@ -68,7 +74,7 @@ class ProfessionInformationSerializer(serializers.ModelSerializer):
     districts = serializers.PrimaryKeyRelatedField(many=True, queryset=District.objects.all(), required=False,)
     
     class Meta:
-        model = Master
+        model = CustomerUser
         fields = ['profession_category', 'profession_service', 'experience', 'cities', 'districts','custom_profession']
         
     def validate(self, data):
@@ -133,7 +139,7 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
     rating_count = serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = Master
+        model = CustomerUser
         fields = [
             'education', 'education_detail', 'languages', 'profile_picture',
             'facebook_url', 'instagram_url', 'tiktok_url', 'linkedin_url', 'youtube_url',
@@ -177,7 +183,7 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
         Handles saving portfolio images along with master profile creation.
         """
         master_work_images = validated_data.pop('master_work_images', [])
-        master = Master.objects.create(**validated_data)
+        master = CustomerUser.objects.create(**validated_data)
         for img in master_work_images:
             MasterWorkImage.objects.create(master=master, image=img)
         return master
@@ -186,7 +192,7 @@ class AdditionalInformationSerializer(serializers.ModelSerializer):
 class CustomerRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True, required=True, label="Şifrəni təkrar yazın")
     class Meta:
-        model = Master
+        model = CustomerUser
         fields = ['full_name', 'birthday', 'phone_number', 'password', 'password2', 'gender']
     
     def validate(self, data):
@@ -207,7 +213,7 @@ class CustomerRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2') 
         password = validated_data.pop('password')
-        user = Master(**validated_data)
+        user = CustomerUser(**validated_data)
         user.set_password(password)
         user.save()
         return user

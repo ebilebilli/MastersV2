@@ -15,7 +15,7 @@ from utils.validators import *
 from utils.constants import GENDER_STATUS
 
 
-class Master(AbstractUser):
+class CustomerUser(AbstractUser):
     MASTER = 'Master'
     CUSTOMER = 'Customer'
     NONE = 'None'
@@ -33,7 +33,7 @@ class Master(AbstractUser):
     REQUIRED_FIELDS = ['full_name']
     objects = MasterUserManager()
     is_master = models.BooleanField(default=False, verbose_name='Status')
-    user_role = models.CharField(choices=ROLE_STATUS)
+    user_role = models.CharField(choices=ROLE_STATUS, max_length=10)
 
     profession_category = models.ForeignKey(
         Category,
@@ -297,7 +297,7 @@ class Master(AbstractUser):
             base_slug = slugify(self.full_name)
             unique_slug = base_slug
             i = 1
-            while Master.objects.filter(slug=unique_slug).exists():
+            while CustomerUser.objects.filter(slug=unique_slug).exists():
                 unique_slug = f'{base_slug}-{i}'
                 i += 1
             self.slug = unique_slug

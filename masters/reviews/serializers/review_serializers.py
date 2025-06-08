@@ -18,7 +18,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Review
-        exclude = ['user']
+        exclude = ['customer']
 
     def validate(self, data):
         required_fields = ['comment', 'rating']

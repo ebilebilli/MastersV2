@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import Master
+from users.models import CustomerUser
 from utils.validators import phone_validator
 
 
@@ -34,7 +34,7 @@ class LoginSerializer(serializers.Serializer):
         password = data.get('password')
 
        
-        master = Master.objects.get(phone_number=phone_number)
+        master = CustomerUser.objects.get(phone_number=phone_number)
         if not master:
             raise serializers.ValidationError({'phone_number': 'Bu telefon nömrəsi ilə istifadəçi tapılmadı.'})
 

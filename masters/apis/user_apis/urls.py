@@ -6,8 +6,7 @@ from apis.user_apis.masters_views import *
 from apis.user_apis.register_views import *
 from apis.user_apis.master_img_views import *
 
-
-app_name = 'user_apis'
+app_name = 'user_apis'  
 
 urlpatterns = [            
     #Register endpoints

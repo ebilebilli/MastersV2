@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from users.models.master_model import Master
+from users.models.master_model import CustomerUser
 from utils.otp import check_otp_in_redis, delete_otp_in_redis
 
 
@@ -26,9 +26,9 @@ class PasswordResetRequestSerializer(serializers.Serializer):
             serializers.ValidationError: If user does not exist.
         """
         try:
-            self._user = Master.objects.get(phone_number=value)
+            self._user = CustomerUser.objects.get(phone_number=value)
             return value
-        except Master.DoesNotExist:
+        except CustomerUser.DoesNotExist:
             raise serializers.ValidationError({'error': 'Bu telefon nömrəsi ilə istifadəçi tapılmadı.'})
             
     def save(self):
@@ -62,7 +62,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         Raises:
             serializers.ValidationError: On mismatch or invalid OTP/password.
         """
-        if not Master.objects.filter(phone_number=data['phone_number']).exists():
+        if not CustomerUser.objects.filter(phone_number=data['phone_number']).exists():
             raise serializers.ValidationError({'phone_number': 'Bu telefon nömrəsi ilə istifadəçi tapılmadı.'})
         try:
             check_otp_in_redis(data)
@@ -70,7 +70,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             raise serializers.ValidationError({'otp_code': f'OTP yoxlaması uğursuz: {str(e)}'})
         if data['new_password'] != data['new_password_two']:
             raise serializers.ValidationError({'new_password': 'Şifrələr uyğun deyil.'})
-        user = Master.objects.get(phone_number=data['phone_number'])
+        user = CustomerUser.objects.get(phone_number=data['phone_number'])
         validate_password(data['new_password'], user=user)
         return data
         
@@ -80,7 +80,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         """
         phone_number = self.validated_data['phone_number']
         new_password = self.validated_data['new_password']
-        user = Master.objects.get(phone_number=phone_number)
+        user = CustomerUser.objects.get(phone_number=phone_number)
         user.set_password(new_password)
         user.save()
         delete_otp_in_redis(phone_number)

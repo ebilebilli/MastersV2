@@ -9,7 +9,7 @@ from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 from users.serializers.login_serializer import LoginSerializer
 from users.serializers.password_serializers import PasswordResetConfirmSerializer, PasswordResetRequestSerializer
-from users.models import Master
+from users.models import CustomerUser
 from users.tasks import send_otp
 
 __all__ = [

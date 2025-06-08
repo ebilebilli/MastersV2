@@ -8,7 +8,7 @@ from django.conf import settings
 from services.models.category_model import Category
 from services.models.service_model import Service
 from services.serializers.service_serializer import ServiceSerializer
-from users.models.master_model import Master
+from users.models.master_model import CustomerUser
 from users.serializers.master_serializer import MasterSerializer
 from utils.paginations import CustomPagination
 
@@ -65,7 +65,7 @@ class MasterListForServicesAPIView(APIView):
     def get(self, request, service_id):
         pagination = self.pagination_class()
         service = get_object_or_404(Service, id=service_id)
-        masters =  Master.objects.filter(profession_service=service, is_active_on_main_page=True)
+        masters =  CustomerUser.objects.filter(profession_service=service, is_active_on_main_page=True, is_master=True)
         if not masters.exists():
             return Response({
                 'error': 'Hal-hazırda bu servisə uyğun aktif bir usta yoxdur'

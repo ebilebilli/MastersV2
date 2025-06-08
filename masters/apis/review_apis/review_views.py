@@ -8,7 +8,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 
 from reviews.models.review_models import Review
-from users.models.master_model import Master
+from users.models.master_model import CustomerUser
 from reviews.serializers.review_serializers import ReviewSerializer
 from utils.paginations import PaginationForMainPage
 from utils.permissions import HeHasPermission
@@ -37,13 +37,13 @@ class ReviewsForMasterAPIView(APIView):
 
     def get(self, request, master_id):
         try:
-            master = Master.objects.filter(
-                is_active_on_main_page=True, id=master_id).order_by('-created_at')
-        except Master.DoesNotExist:
+            master = CustomerUser.objects.filter(
+                is_active_on_main_page=True, id=master_id)
+        except CustomerUser.DoesNotExist:
             return Response({'detail': 'Usta tapılmadı.'}, status=status.HTTP_404_NOT_FOUND)
         
         pagination = self.pagination_class()
-        reviews = Review.objects.filter(master=master)
+        reviews = Review.objects.filter(master=master).order_by('-created_at')
         result_page = pagination.paginate_queryset(reviews, request)
         serializer = ReviewSerializer(result_page, many=True)
         paginated_response = pagination.get_paginated_response(serializer.data).data
@@ -63,14 +63,14 @@ class CreateReviewAPIView(APIView):
     transaction.atomic
     def post(self, request, master_id):
         user = request.user
-        # if master.user.id == request.user.id:
-        #     return Response({
-        #         'error': 'Özünüzü dəyərləndirmə əlavə edə bilməzsiniz.'
-        #         }, status=status.HTTP_400_BAD_REQUEST)
+        if request.user.id == master_id:
+            return Response({
+                'error': 'Özünüzə dəyərləndirmə əlavə edə bilməzsiniz.'
+                 }, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            master = Master.objects.get(is_active_on_main_page=True, id=master_id)
-        except Master.DoesNotExist:
+            master = CustomerUser.objects.get(is_active_on_main_page=True, id=master_id, is_master=True)
+        except CustomerUser.DoesNotExist:
             return Response({'detail': 'Usta tapılmadı.'}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = ReviewSerializer(data=request.data)
@@ -135,7 +135,7 @@ class FilterReviewAPIView(APIView):
 
     def get(self, request, master_id):
         pagination = self.pagination_class()
-        master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
+        master = get_object_or_404(CustomerUser, is_active_on_main_page=True, id=master_id)
         order = request.query_params.get('order', 'newest')
         if order == 'oldest':
             reviews = Review.objects.filter(master=master).order_by('created_at')  

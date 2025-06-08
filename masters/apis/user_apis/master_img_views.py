@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser, MultiPartParser
 
-from users.models.master_model import Master
+from users.models.master_model import CustomerUser
 from users.models.master_work_img_model import MasterWorkImage
 from users.serializers.master_image_serializer import MasterImageSerializer
 from utils.permissions import HeHasPermission
@@ -29,21 +29,17 @@ class WorkImagesForMasterAPIView(APIView):
     http_method_names = ['get', 'post']
 
     def get(self, request, master_id):
-        master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
+        master = get_object_or_404(CustomerUser, is_active_on_main_page=True, is_master=True, id=master_id)
         images = MasterWorkImage.objects.filter(master=master)
         serializer = MasterImageSerializer(images, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, master_id):
-        try:
-            master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
-            user = request.user
-            if user != master:
-                return Response({'error': 'İcazəniz yoxdur'})
+        master = get_object_or_404(CustomerUser, is_active_on_main_page=True, is_master=True, id=master_id)
+        user = request.user
+        if user != master:
+            return Response({'error': 'İcazəniz yoxdur'})
             
-        except Master.DoesNotExist:
-            return Response({'error': 'Usta tapılmadı.'}, status=status.HTTP_404_NOT_FOUND)
-
         existing_image_count = MasterWorkImage.objects.filter(master=master).count()
         incoming_data = request.data
         new_images = incoming_data if isinstance(incoming_data, list) else [incoming_data]

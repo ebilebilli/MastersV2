@@ -7,15 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db import transaction
 
-from users.models import Master
-from users.serializers.register_serializers import(
-    UserRoleSelectionSerializer,
-    PersonalInformationSerializer,
-    ProfessionInformationSerializer,
-    AdditionalInformationSerializer,
-    CustomerRegistrationSerializer
-)
-
+from users.models import CustomerUser
+from users.serializers.register_serializers import *
 
 __all__ = [
     'RegisterRoleSelectionAPIView',
@@ -33,7 +26,7 @@ class RegisterRoleSelectionAPIView(APIView):
     def post(self, request):
         serializer = UserRoleSelectionSerializer(data=request.data)
         if serializer.is_valid():
-            user = Master(user_role = serializer.validated_data['user_role'])
+            user = CustomerUser(user_role = serializer.validated_data['user_role'])
             user.save()
             refresh = RefreshToken.for_user(user)
 
@@ -61,14 +54,14 @@ class RegisterPersonalAPIView(APIView):
 
     @transaction.atomic
     def post(self, request):
-        if request.user.user_role != Master.MASTER: 
+        if request.user.user_role != CustomerUser.MASTER: 
             return Response({
                 'error': 'Bu qeydiyyat səhifəsi yalnız ustalar üçündür.'
             }, status=status.HTTP_403_FORBIDDEN)
         
         serializer = PersonalInformationSerializer(data=request.data)
         user_id = request.user.id
-        master = Master.objects.filter(id=user_id, is_active_on_main_page=False).first()
+        master = CustomerUser.objects.filter(id=user_id, is_active_on_main_page=False).first()
         if serializer.is_valid():
             master = request.user 
             master.phone_number = serializer.validated_data['phone_number']
@@ -99,13 +92,13 @@ class RegisterProfessionAPIView(APIView):
 
     @transaction.atomic
     def post(self, request):
-        if request.user.user_role != Master.MASTER: 
+        if request.user.user_role != CustomerUser.MASTER: 
             return Response({
                 'error': 'Bu qeydiyyat səhifəsi yalnız ustalar üçündür.'
             }, status=status.HTTP_403_FORBIDDEN)
         
         user_id = request.user.id
-        master = Master.objects.filter(id=user_id, is_active_on_main_page=False).first()
+        master = CustomerUser.objects.filter(id=user_id, is_active_on_main_page=False).first()
         if not master:
             return Response({
                 'error': 'İstifadəçi tapılmadı və ya qeydiyyatın bu mərhələsinə uyğun deyil.'
@@ -132,13 +125,13 @@ class RegisterAdditionalAPIView(APIView):
 
     @transaction.atomic
     def post(self, request):
-        if request.user.user_role != Master.MASTER:  
+        if request.user.user_role != CustomerUser.MASTER:  
             return Response({
                 'error': 'Bu qeydiyyat səhifəsi yalnız ustalar üçündür.'
             }, status=status.HTTP_403_FORBIDDEN)
         
         user_id = request.user.id
-        master = Master.objects.filter(id=user_id, is_active_on_main_page=False).first()
+        master = CustomerUser.objects.filter(id=user_id, is_active_on_main_page=False).first()
         if not master:
             return Response({
                 'error': 'İstifadəçi tapılmadı və ya qeydiyyatın bu mərhələsinə uyğun deyil.'
@@ -162,10 +155,8 @@ class RegisterCustomerAPIView(APIView):
 
     @transaction.atomic
     def post(self, request):
-        if request.user.user_role != Master.CUSTOMER: 
-            return Response({
-                'error': 'Bu qeydiyyat səhifəsi yalnız müştərilər üçündür.'
-            }, status=status.HTTP_403_FORBIDDEN)
+        if request.user.user_role != CustomerUser.CUSTOMER: 
+            return Response({'error': 'Bu qeydiyyat səhifəsi yalnız müştərilər üçündür.'}, status=status.HTTP_403_FORBIDDEN)
         
         serializer = CustomerRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -175,6 +166,7 @@ class RegisterCustomerAPIView(APIView):
             customer.birthday = serializer.validated_data['birthday']
             customer.gender = serializer.validated_data['gender']
             customer.set_password(serializer.validated_data['password'])
+            customer.is_active_on_main_page=True,
             customer.save()
 
             return Response({

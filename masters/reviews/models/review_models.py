@@ -5,13 +5,14 @@ from django.core.validators import(
     MaxLengthValidator, 
     MinLengthValidator
     )
+from django.core.exceptions import ValidationError
 
 from utils.validators import az_letters_validator, not_only_whitespace
 
 
 class Review(models.Model):
-    master = models.ForeignKey('users.Master', on_delete=models.CASCADE, related_name='reviews') 
-    user = models.CharField(max_length=255)
+    master = models.ForeignKey('users.CustomerUser', on_delete=models.CASCADE, related_name='reviews')
+    customer = models.ForeignKey('users.CustomerUser', on_delete=models.SET_NULL, related_name='comments', null=True)
     username = models.CharField(
         max_length=20,
         validators=[az_letters_validator],
@@ -95,5 +96,19 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('master', 'user')
+        unique_together = ('master', 'customer')
 
+    def clean(self):
+        if self.master and self.master.user_role != 'Master':
+            raise ValidationError({'master': 'Seçilmiş istifadəçi usta olmalıdır.'})
+        if self.customer and self.customer.user_role != 'Customer':
+            raise ValidationError({'user': 'Seçilmiş istifadəçi müştəri olmalıdır.'})
+    
+    def create(self, validated_data):
+        review = Review(**validated_data)
+        review.full_clean()  
+        review.save()
+        return review
+   
+    def __str__(self):
+        return f'{self.customer} wrote review to {self.master}'

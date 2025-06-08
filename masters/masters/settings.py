@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'search'
 ]
 
-AUTH_USER_MODEL = 'users.Master'
+AUTH_USER_MODEL = 'users.CustomerUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

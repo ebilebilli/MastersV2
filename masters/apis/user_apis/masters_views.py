@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q, Avg
 from django.db.models import Count
 
-from users.models.master_model import Master
+from users.models.master_model import CustomerUser
 from users.serializers.master_serializer import MasterSerializer
 from utils.paginations import CustomPagination, PaginationForMainPage
 
@@ -28,10 +28,10 @@ class MastersListAPIView(APIView):
 
     def get(self, request):
         pagination = self.pagination_class()
-        masters = Master.objects.annotate(
+        masters = CustomerUser.objects.annotate(
         avg_rating=Avg('reviews__rating'),
         count_ratings=Count('reviews') 
-    ).filter(is_active_on_main_page=True)
+    ).filter(is_active_on_main_page=True, is_master=True)
         
         if not masters.exists():
             return Response({
@@ -54,10 +54,10 @@ class TopRatedMastersListAPIView(APIView):
 
     def get(self, request):
         pagination = self.pagination_class()
-        masters = Master.objects.annotate(
+        masters = CustomerUser.objects.annotate(
         avg_rating=Avg('reviews__rating'),
         count_ratings=Count('reviews') 
-    ).filter(is_active_on_main_page=True).order_by('-avg_rating', '-count_ratings', '-last_login')
+    ).filter(is_active_on_main_page=True, is_master=True).order_by('-avg_rating', '-count_ratings', '-last_login')
         
         if not masters.exists():
             return Response({
@@ -83,13 +83,13 @@ class MasterDetailAPIView(APIView):
     http_method_names = ['get', 'patch', 'delete']
 
     def get(self, request, master_id):
-        master = get_object_or_404(Master, id=master_id, is_active_on_main_page=True)
+        master = get_object_or_404(CustomerUser, id=master_id, is_active_on_main_page=True)
         serializer = MasterSerializer(master)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def patch(self, request, master_id):
         user = request.user
-        master = get_object_or_404(Master, id=master_id)
+        master = get_object_or_404(CustomerUser, id=master_id)
         serializer = MasterSerializer(master, partial=True)
         if master.id != user.id or not user.is_superuser:
             return Response({'error': 'Bunu etməyə icazəniz yoxdur'}, status=status.HTTP_403_FORBIDDEN)
@@ -101,7 +101,7 @@ class MasterDetailAPIView(APIView):
         
     def delete(self, request, master_id):
         user = request.user
-        master = get_object_or_404(Master, id=master_id) 
+        master = get_object_or_404(CustomerUser, id=master_id) 
         if master.id != user.id or not user.is_superuser:
             return Response({'error': 'Bunu etməyə icazəniz yoxdur'}, status=status.HTTP_403_FORBIDDEN)
         
