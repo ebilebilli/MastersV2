@@ -2,6 +2,7 @@ from django.urls import path
 
 from apis.service_apis.category_views import *
 from apis.service_apis.service_views import *
+from apis.service_apis.service_views import statistics_view
 
 
 app_name = 'service_apis'
@@ -35,4 +36,5 @@ urlpatterns = [
         MasterListForServicesAPIView.as_view(), 
         name='masters-by-service'
     ),
+    path('statistics/', statistics_view)
 ]
