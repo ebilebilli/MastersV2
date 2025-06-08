@@ -13,7 +13,6 @@ __all__ = [
 
 es_client = Elasticsearch(hosts=[settings.ELASTICSEARCH_HOST])
 
-# Swagger query params
 search_param = openapi.Parameter('search', openapi.IN_QUERY, description="Search query", type=openapi.TYPE_STRING)
 profession_category_id_param = openapi.Parameter('profession_category_id', openapi.IN_QUERY, description="Filter by profession category ID", type=openapi.TYPE_INTEGER)
 profession_service_id_param = openapi.Parameter('profession_service_id', openapi.IN_QUERY, description="Filter by profession service ID", type=openapi.TYPE_INTEGER)
@@ -23,7 +22,6 @@ experience_param = openapi.Parameter('experience', openapi.IN_QUERY, description
 ordering_param = openapi.Parameter('ordering', openapi.IN_QUERY, description="Field to order by, e.g., 'experience', 'full_name.keyword'", type=openapi.TYPE_STRING)
 page_param = openapi.Parameter('page', openapi.IN_QUERY, description="Page number", type=openapi.TYPE_INTEGER)
 page_size_param = openapi.Parameter('page_size', openapi.IN_QUERY, description="Page size (max 100)", type=openapi.TYPE_INTEGER)
-
 class SearchAPIView(APIView):
     permission_classes = [AllowAny]
     http_method_names = ['get']
@@ -41,16 +39,7 @@ class SearchAPIView(APIView):
             page_size_param
         ],
         operation_summary="Search and filter masters",
-        operation_description="""
-        This endpoint allows users to search for masters using multiple filters.
-        It integrates with Elasticsearch and returns paginated results from the `masters` index.
-
-        Available filters:
-        - Full-text search on name, profession, city, district, etc.
-        - profession_category_id, profession_service_id
-        - city_id, district_id, experience
-        - ordering, pagination
-        """
+        operation_description="Search with filters and keywords"
     )
     def get(self, request):
         profession_category_id = request.GET.get('profession_category_id')
@@ -73,15 +62,24 @@ class SearchAPIView(APIView):
                 "term": {"profession_service.id": int(profession_service_id)}
             })
 
-        # Dəyişiklik burada: nested query yerinə adi term query istifadə olunur
         if city_id:
             must_filters.append({
-                "term": {"cities.id": int(city_id)}
+                "nested": {
+                    "path": "cities",
+                    "query": {
+                        "term": {"cities.id": int(city_id)}
+                    }
+                }
             })
 
         if district_id:
             must_filters.append({
-                "term": {"districts.id": int(district_id)}
+                "nested": {
+                    "path": "districts",
+                    "query": {
+                        "term": {"districts.id": int(district_id)}
+                    }
+                }
             })
 
         if experience:
@@ -92,43 +90,64 @@ class SearchAPIView(APIView):
             except ValueError:
                 pass
 
-        query_body = {
-            "query": {
-                "bool": {
-                    "filter": must_filters
-                }
-            }
+        # Əsas query qurulması
+        bool_query = {
+            "must": must_filters  # İlk növbədə filter kimi istifadə olunan termlər must-dadır
         }
 
         if search_query:
-            query_body["query"] = {
-                "bool": {
-                    "filter": must_filters,
-                    "must": {
-                        "multi_match": {
-                            "query": search_query,
-                            "fields": [
-                                "full_name",
-                                "custom_profession",
-                                "profession_category.name",
-                                "profession_service.name",
-                                "cities.name",
-                                "districts.name"
-                            ]
+            # search_query varsa, onu must-ə əlavə et
+            bool_query["must"].append({
+                "multi_match": {
+                    "query": search_query,
+                    "fields": [
+                        "full_name",
+                        "custom_profession",
+                        "profession_category.name",
+                        "profession_service.name"
+                    ]
+                }
+            })
+
+            # cities və districts üçün nested match-lər də əlavə etmək istəsən, onları da must-ə əlavə et
+            bool_query["must"].extend([
+                {
+                    "nested": {
+                        "path": "cities",
+                        "query": {
+                            "match": {"cities.name": search_query}
+                        }
+                    }
+                },
+                {
+                    "nested": {
+                        "path": "districts",
+                        "query": {
+                            "match": {"districts.name": search_query}
                         }
                     }
                 }
+            ])
+
+        query_body = {
+            "query": {
+                "bool": bool_query
             }
+        }
 
         if ordering:
             query_body["sort"] = [ordering]
 
-        page = int(request.GET.get('page', 1))
-        page_size = CustomPagination.page_size
-        page_size = min(
-            int(request.GET.get('page_size', page_size)),
-            CustomPagination.max_page_size
-        )
+        try:
+            page = int(request.GET.get('page', 1))
+            page_size = min(
+                int(request.GET.get('page_size', CustomPagination.page_size)),
+                CustomPagination.max_page_size
+            )
+        except ValueError:
+            page = 1
+            page_size = CustomPagination.page_size
+
         from_ = (page - 1) * page_size
 
         response = es_client.search(

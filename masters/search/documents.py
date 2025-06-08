@@ -1,20 +1,19 @@
 from django_elasticsearch_dsl import Document, fields, Index
 from django_elasticsearch_dsl.registries import registry
+from elasticsearch import Elasticsearch
+from django.conf import settings
 
 from services.models.category_model import Category
 from services.models.service_model import Service
 from core.models.city_model import City, District
 from users.models.master_model import Master
 
+es_client = Elasticsearch(hosts=[settings.ELASTICSEARCH_HOST])
+if not es_client.ping():
+    raise ValueError("Elasticsearch serverinə qoşulma uğursuz oldu!")
 
 @registry.register_document
 class MasterDocument(Document):
-    """
-    Elasticsearch document for indexing and searching Master instances.
-    
-    Includes nested fields for related models such as Category, Service, City, and District.
-    Also indexes computed fields like average rating and review count.
-    """
     profession_category = fields.ObjectField(properties={
         'id': fields.IntegerField(),
         'name': fields.TextField(),
@@ -25,7 +24,6 @@ class MasterDocument(Document):
         'id': fields.IntegerField(),
         'name': fields.TextField(),
         'display_name': fields.TextField(),
-        
     })
 
     cities = fields.NestedField(properties={
@@ -40,7 +38,6 @@ class MasterDocument(Document):
         'display_name': fields.TextField(),
     })
 
-    
     average_rating = fields.FloatField()
     review_count = fields.IntegerField()
 
@@ -52,11 +49,6 @@ class MasterDocument(Document):
         }
 
     class Django:
-        """
-        Configuration for linking this Document with the Django model.
-        
-        Specifies the model, fields to be indexed, and related models to watch for updates.
-        """
         model = Master
         fields = [
             'full_name',
@@ -77,7 +69,7 @@ class MasterDocument(Document):
             'slug',
         ]
         related_models = [Category, Service, City, District]
-        
+
     def get_instances_from_related(self, related_instance):
         try:
             if isinstance(related_instance, Category):
@@ -89,15 +81,14 @@ class MasterDocument(Document):
             elif isinstance(related_instance, District):
                 return Master.objects.filter(districts=related_instance)
             return []
-        except Exception as e:
+        except Exception:
             return []
-    
 
     def prepare_average_rating(self, instance):
         return instance.average_rating() or None
-    
+
     def prepare_review_count(self, instance):
-        return instance.review_count or  None
+        return instance.review_count or None
 
     def prepare_profession_category(self, instance):
         if instance.profession_category:
@@ -115,8 +106,8 @@ class MasterDocument(Document):
                 'name': instance.profession_service.name,
                 'display_name': instance.profession_service.display_name
             }
-        # return None
-    
+        return None
+
     def prepare_custom_profession(self, instance):
         return instance.custom_profession or None
 
@@ -125,7 +116,7 @@ class MasterDocument(Document):
             {
                 'id': city.id,
                 'name': city.name,
-                'display_name': getattr(city, 'display_name', None) 
+                'display_name': getattr(city, 'display_name', None)
             }
             for city in instance.cities.all()
         ]
@@ -135,8 +126,7 @@ class MasterDocument(Document):
             {
                 'id': district.id,
                 'name': district.name,
-                'display_name': getattr(district, 'display_name', None)  
+                'display_name': getattr(district, 'display_name', None)
             }
             for district in instance.districts.all()
         ]
-  
