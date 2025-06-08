@@ -1,9 +1,10 @@
 from elasticsearch import Elasticsearch
 from rest_framework.views import APIView
 from django.conf import settings
-
 from rest_framework.permissions import AllowAny
 from utils.paginations import CustomPagination
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 __all__ = [
     'SearchAPIView'
@@ -37,7 +38,42 @@ class SearchAPIView(APIView):
     pagination_class = CustomPagination
     http_method_names = ['get']
 
-
+    @swagger_auto_schema(
+        operation_description="Elasticsearch istifadə edərək ustaları axtarmaq və filtrləmək. Nəticələr səhifələnmiş şəkildə qaytarılır.",
+        responses={
+            200: openapi.Response(
+                description="Uğurlu cavab, səhifələnmiş ustalar siyahısı.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'count': openapi.Schema(type=openapi.TYPE_INTEGER, description="Ümumi nəticə sayı"),
+                        'next': openapi.Schema(type=openapi.TYPE_STRING, description="Növbəti səhifənin URL-i", nullable=True),
+                        'previous': openapi.Schema(type=openapi.TYPE_STRING, description="Əvvəlki səhifənin URL-i", nullable=True),
+                        'results': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                description="Usta məlumatları",
+                                additional_properties=True
+                            ),
+                            description="Axtarış nəticələri"
+                        )
+                    }
+                )
+            )
+        },
+        manual_parameters=[
+            openapi.Parameter('search', openapi.IN_QUERY, description="Tam ad, peşə, şəhər və s. üçün axtarış sorğusu", type=openapi.TYPE_STRING, required=False),
+            openapi.Parameter('profession_category_id', openapi.IN_QUERY, description="Peşə kateqoriyasının ID-si", type=openapi.TYPE_INTEGER, required=False),
+            openapi.Parameter('profession_service_id', openapi.IN_QUERY, description="Peşə xidmətinin ID-si", type=openapi.TYPE_INTEGER, required=False),
+            openapi.Parameter('city_id', openapi.IN_QUERY, description="Şəhərin ID-si (cities sahəsində nested)", type=openapi.TYPE_INTEGER, required=False),
+            openapi.Parameter('district_id', openapi.IN_QUERY, description="Rayonun ID-si (districts sahəsində nested)", type=openapi.TYPE_INTEGER, required=False),
+            openapi.Parameter('experience', openapi.IN_QUERY, description="Təcrübə illəri (dəqiq uyğunluq)", type=openapi.TYPE_INTEGER, required=False),
+            openapi.Parameter('ordering', openapi.IN_QUERY, description="Sıralama sahəsi (məsələn, 'experience', 'full_name.keyword')", type=openapi.TYPE_STRING, required=False),
+            openapi.Parameter('page', openapi.IN_QUERY, description="Səhifə nömrəsi", type=openapi.TYPE_INTEGER, required=False, default=1),
+            openapi.Parameter('page_size', openapi.IN_QUERY, description="Səhifə başına nəticə sayı (defolt 10, maksimum 100)", type=openapi.TYPE_INTEGER, required=False)
+        ]
+    )
     def get(self, request):
         profession_category_id = request.GET.get('profession_category_id')
         profession_service_id = request.GET.get('profession_service_id')
