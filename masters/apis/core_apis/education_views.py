@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -23,6 +24,10 @@ class EducationListAPIView(APIView):
     permission_classes = [AllowAny]
     http_method_names = ['get']
 
+    @swagger_auto_schema(
+        operation_description="Returns a list of all education entries.",
+        responses={200: EducationSerializer(many=True)}
+    )
     def get(self, request):
         cache_key = f'education_list'
         cached_data = cache.get(cache_key)
@@ -33,4 +38,3 @@ class EducationListAPIView(APIView):
         serializer = EducationSerializer(educations, many=True)
         cache.set(cache_key, serializer.data, timeout=settings.TIMEOUT)
         return Response(serializer.data, status=status.HTTP_200_OK)
-

@@ -100,7 +100,7 @@ class MasterDocument(Document):
                 'name': instance.profession_service.name,
                 'display_name': instance.profession_service.display_name
             }
-        return None
+        # return None
     
     def prepare_custom_profession(self, instance):
         return instance.custom_profession or None
