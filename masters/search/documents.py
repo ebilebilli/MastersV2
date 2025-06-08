@@ -1,3 +1,4 @@
+import logging
 from django_elasticsearch_dsl import Document, fields, Index
 from django_elasticsearch_dsl.registries import registry
 from elasticsearch import Elasticsearch
@@ -8,9 +9,18 @@ from services.models.service_model import Service
 from core.models.city_model import City, District
 from users.models.master_model import Master
 
-es_client = Elasticsearch(hosts=[settings.ELASTICSEARCH_HOST])
-if not es_client.ping():
-    raise ValueError("Elasticsearch serverinə qoşulma uğursuz oldu!")
+logger = logging.getLogger(__name__)
+
+# Elasticsearch client və bağlantı yoxlaması
+try:
+    es_client = Elasticsearch(hosts=[settings.ELASTICSEARCH_HOST])
+    if not es_client.ping():
+        logger.warning("Elasticsearch serverinə qoşulma uğursuz oldu!")
+        es_client = None
+except Exception as e:
+    logger.error(f"Elasticsearch bağlantısı zamanı xəta baş verdi: {e}")
+    es_client = None
+
 
 @registry.register_document
 class MasterDocument(Document):
