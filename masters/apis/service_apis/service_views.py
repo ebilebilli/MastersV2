@@ -1,5 +1,5 @@
 from rest_framework.views import APIView, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
@@ -130,16 +130,27 @@ class MasterListForServicesAPIView(APIView):
     
     
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="Statistics: ustalar, xidmətlər və ortalama reytinq",
+    responses={200: openapi.Response('Statistics response', schema=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'usta_sayi': openapi.Schema(type=openapi.TYPE_STRING, description='Usta sayı və ya interval'),
+            'xidmet_novu': openapi.Schema(type=openapi.TYPE_INTEGER, description='Xidmət növü sayı'),
+            'ortalama_reytinq': openapi.Schema(type=openapi.TYPE_NUMBER, format='float', description='Ortalama reytinq'),
+        }
+    ))}
+)
 @api_view(['GET'])
+@permission_classes([AllowAny]) 
 def statistics_view(request):
-    # Yalnız aktiv və təsdiqlənmiş ustalar
     master_count = Master.objects.filter(is_active_on_main_page=True).count()
     category_count = Category.objects.count()
     avg_rating = Review.objects.aggregate(avg=Avg('rating'))['avg'] or 0.0
 
-    # Dinamik usta sayı formatı
     if master_count <= 50:
-        master_count_label = master_count
+        master_count_label = str(master_count)
     elif master_count <= 100:
         master_count_label = "100+"
     elif master_count <= 200:
