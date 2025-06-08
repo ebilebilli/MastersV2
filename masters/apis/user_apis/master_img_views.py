@@ -43,6 +43,15 @@ class WorkImagesForMasterAPIView(APIView):
 
 
 class CreateWorkImagesForMasterAPIView(APIView):
+    """
+    Upload work images for a master.
+
+    Authenticated users can upload up to 10 images for their own master profile. 
+    Only the owner of the profile can upload images. Supports single or multiple uploads.
+
+    Returns 201 on success, 400 if image limit is exceeded or data is invalid,
+    401 if not authorized, and 404 if master not found.
+    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, HeHasPermission]
     parser_classes = [JSONParser, MultiPartParser]
