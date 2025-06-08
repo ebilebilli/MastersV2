@@ -32,14 +32,12 @@ class CategoryListAPIView(APIView):
     """
     permission_classes = [AllowAny]
     http_method_names = ['get']
-
+    
     @swagger_auto_schema(
-        operation_description="Bütün mövcud xidmət kateqoriyalarının siyahısını əldə edin.",
-        responses={
-            200: CategorySerializer(many=True),
-            404: openapi.Response(description="Heç bir kategoriya tapılmadı.")
-        }
+        operation_summary="Kateqoriyalari qaytarır",
+        responses={200: CategorySerializer(many=True)}
     )
+
     def get(self, request):
         cache_key = f'category_list'
         cached_data = cache.get(cache_key)
@@ -73,32 +71,12 @@ class MasterListForCategoryAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class = CustomPagination
     http_method_names = ['get']
-
+    
     @swagger_auto_schema(
-        operation_description="Verilmiş kateqoriya ID-si ilə əlaqəli aktiv ustaların səhifələnmiş siyahısını əldə edin.",
-        responses={
-            200: openapi.Response(
-                description="Səhifələnmiş ustalar siyahısı",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'count': openapi.Schema(type=openapi.TYPE_INTEGER, description="Ümumi nəticə sayı"),
-                        'next': openapi.Schema(type=openapi.TYPE_STRING, description="Növbəti səhifənin URL-i", nullable=True),
-                        'previous': openapi.Schema(type=openapi.TYPE_STRING, description="Əvvəlki səhifənin URL-i", nullable=True),
-                        'results': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=MasterSerializer,
-                            description="Aktiv ustaların siyahısı"
-                        )
-                    }
-                )
-            ),
-            404: openapi.Response(description="Kateqoriya və ya uyğun usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('category_id', openapi.IN_PATH, description="Kateqoriyanın ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+        operation_summary="Kateqoriya üzrə aktiv ustaları qaytarır",
+        responses={200: MasterSerializer(many=True)}
     )
+
     def get(self, request, category_id):
         pagination = self.pagination_class()
         category = get_object_or_404(Category, id=category_id)

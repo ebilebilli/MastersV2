@@ -29,42 +29,24 @@ class WorkImagesForMasterAPIView(APIView):
     """
     parser_classes = [JSONParser, MultiPartParser]
     http_method_names = ['get', 'post']
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-
+    
     @swagger_auto_schema(
-        operation_description="Müəyyən bir usta üçün iş şəkillərinin siyahısını əldə edin.",
-        responses={
-            200: MasterImageSerializer(many=True),
-            404: openapi.Response(description="Usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('master_id', openapi.IN_PATH, description="Ustanın ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+        operation_summary="Masterin iş şəkillərini göstər",
+        responses={200: MasterImageSerializer(many=True)}
     )
+    
     def get(self, request, master_id):
         master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
         images = MasterWorkImage.objects.filter(master=master)
         serializer = MasterImageSerializer(images, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+    
     @swagger_auto_schema(
-        operation_description="Authentifikasiya olunmuş usta üçün bir və ya daha çox yeni iş şəkli yükləyin (maksimum 10 şəkil).",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_ARRAY,
-            items=MasterImageSerializer,
-            description="Şəkil məlumatları (bir və ya bir neçə şəkil)"
-        ),
-        responses={
-            201: MasterImageSerializer(many=True),
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir və ya şəkil limiti keçilib."),
-            401: openapi.Response(description="İcazəsiz giriş."),
-            404: openapi.Response(description="Usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('master_id', openapi.IN_PATH, description="Ustanın ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+        operation_summary="Master üçün şəkil yüklə",
+        request_body=MasterImageSerializer(many=True),
+        responses={201: MasterImageSerializer(many=True), 400: 'Validasiya xətası'}
     )
+
     def post(self, request, master_id):
         try:
             master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
@@ -107,21 +89,17 @@ class DeleteMasterWorkImageAPIView(APIView):
     - 204 No Content if deleted.
     - 400 Bad Request if image not found.
     """
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, HeHasPermission]
+    permission_classes = [HeHasPermission]
     http_method_names = ['delete']
-
+    
     @swagger_auto_schema(
-        operation_description="Ustanın iş şəklini ID ilə silin (yalnız icazəsi olan istifadəçilər).",
+        operation_summary="Şəkli sil (master)",
         responses={
-            204: openapi.Response(description="Şəkil uğurla silindi."),
-            400: openapi.Response(description="Şəkil tapılmadı."),
-            401: openapi.Response(description="İcazəsiz giriş.")
-        },
-        manual_parameters=[
-            openapi.Parameter('image_id', openapi.IN_PATH, description="Şəklin ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+            204: openapi.Response(description="Şəkil silindi"),
+            400: openapi.Response(description="Şəkil tapılmadı")
+        }
     )
+    
     def delete(self, request, image_id):
         try:
             image = MasterWorkImage.objects.get(id=image_id)

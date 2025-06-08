@@ -34,17 +34,12 @@ class ServicesForCategoryAPIView(APIView):
     """
     permission_classes = [AllowAny]
     http_method_names = ['get']
-
+    
     @swagger_auto_schema(
-        operation_description="Verilmiş kateqoriya ilə əlaqəli xidmətlərin siyahısını əldə edin.",
-        responses={
-            200: ServiceSerializer(many=True),
-            404: openapi.Response(description="Kateqoriya tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('category_id', openapi.IN_PATH, description="Kateqoriyanın ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+        operation_summary="Kateqoriya üzrə aktiv ustaları qaytarır",
+        responses={200: ServiceSerializer(many=True)}
     )
+
     def get(self, request, category_id):
         cache_key = f'services_for_category_{category_id}'
         cached_data = cache.get(cache_key)
@@ -69,36 +64,19 @@ class MasterListForServicesAPIView(APIView):
     Returns:
     - 200 OK with a paginated list of active masters.
     - 404 Not Found if the service does not exist or no masters are available.
+    
     """
+
     permission_classes = [AllowAny]
     pagination_class = CustomPagination
     http_method_names = ['get']
-
+    
     @swagger_auto_schema(
-        operation_description="Verilmiş xidmət ID-si ilə əlaqəli aktiv ustaların səhifələnmiş siyahısını əldə edin.",
-        responses={
-            200: openapi.Response(
-                description="Səhifələnmiş ustalar siyahısı",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'count': openapi.Schema(type=openapi.TYPE_INTEGER, description="Ümumi nəticə sayı"),
-                        'next': openapi.Schema(type=openapi.TYPE_STRING, description="Növbəti səhifənin URL-i", nullable=True),
-                        'previous': openapi.Schema(type=openapi.TYPE_STRING, description="Əvvəlki səhifənin URL-i", nullable=True),
-                        'results': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=MasterSerializer,
-                            description="Aktiv ustaların siyahısı"
-                        )
-                    }
-                )
-            ),
-            404: openapi.Response(description="Xidmət və ya uyğun usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('service_id', openapi.IN_PATH, description="Xidmətin ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+        operation_summary="Kateqoriya üzrə aktiv ustaları qaytarır",
+        responses={200: MasterSerializer(many=True)}
     )
+
+
     def get(self, request, service_id):
         pagination = self.pagination_class()
         service = get_object_or_404(Service, id=service_id)
