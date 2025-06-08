@@ -20,6 +20,11 @@ urlpatterns = [
     ),
 
     #Service endpoints
+     path(
+        'services/',
+        ServiceListAPIView.as_view(),
+        name='services '
+    ),
     path(
         'category/<int:category_id>/services/',
         ServicesForCategoryAPIView.as_view(),

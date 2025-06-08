@@ -57,6 +57,8 @@ class CreateReviewAPIView(APIView):
     @transaction.atomic
     def post(self, request, master_id):
         user = request.user
+        if user.id == master_id:
+            return Response({'error': 'Özünüzə şərh əlavə edə bilmərsiniz'}, status=status.HTTP_403_FORBIDDEN) 
         try:
             master = Master.objects.get(is_active_on_main_page=True, id=master_id)
         except Master.DoesNotExist:

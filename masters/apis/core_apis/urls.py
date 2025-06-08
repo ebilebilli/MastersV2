@@ -15,9 +15,9 @@ urlpatterns = [
         name='cities'
     ),
     path(
-        'disrticts/',
+        'districts/',
         DistrictListAPIView.as_view(),
-        name='disrticts'
+        name='districts'
     ),
 
     #Language endpointss

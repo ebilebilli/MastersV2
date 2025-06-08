@@ -14,7 +14,13 @@ def clear_category_caches(sender, **kwargs):
 
 @receiver(post_save, sender=Service)
 @receiver(post_delete, sender=Service)
-def clear_category_caches(sender, instance, **kwargs):
+def clear_service_caches(sender, **kwargs):
+    cache.delete('services_list')
+
+
+@receiver(post_save, sender=Service)
+@receiver(post_delete, sender=Service)
+def clear_service_caches_for_category(sender, instance, **kwargs):
     category_id = instance.category_id
     cache_key = f'services_for_category_{category_id}'
     cache.delete(cache_key)

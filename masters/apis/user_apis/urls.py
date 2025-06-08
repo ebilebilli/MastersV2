@@ -81,6 +81,11 @@ urlpatterns = [
         name='work-images'
     ),
     path(
+        'masters/images/create/',
+        CreateWorkImagesForMasterAPIView.as_view(),
+        name='create-image'
+    ),
+    path(
         'masters/images/delete/',
         DeleteMasterWorkImageAPIView.as_view(),
         name='delete-image'

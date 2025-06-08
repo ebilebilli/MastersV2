@@ -14,7 +14,8 @@ from utils.permissions import HeHasPermission
 
 __all__ = [
     'WorkImagesForMasterAPIView',
-    'DeleteMasterWorkImageAPIView',
+    'CreateWorkImagesForMasterAPIView',
+    'DeleteMasterWorkImageAPIView'
 ]
 
 
@@ -27,8 +28,7 @@ class WorkImagesForMasterAPIView(APIView):
     Upload one or more new work images for the authenticated master.
     Limits the total image count to 10.
     """
-    parser_classes = [JSONParser, MultiPartParser]
-    http_method_names = ['get', 'post']
+    http_method_names = ['get']
     
     @swagger_auto_schema(
         operation_summary="Masterin iş şəkillərini göstər",
@@ -40,7 +40,15 @@ class WorkImagesForMasterAPIView(APIView):
         images = MasterWorkImage.objects.filter(master=master)
         serializer = MasterImageSerializer(images, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+
+class CreateWorkImagesForMasterAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, HeHasPermission]
+    parser_classes = [JSONParser, MultiPartParser]
+    http_method_names = ['post']
+
+
     @swagger_auto_schema(
         operation_summary="Master üçün şəkil yüklə",
         request_body=MasterImageSerializer(many=True),

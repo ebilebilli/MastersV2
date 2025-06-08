@@ -16,8 +16,44 @@ from utils.paginations import CustomPagination
 
 __all__ = [
     'ServicesForCategoryAPIView',
-    'MasterListForServicesAPIView'
+    'MasterListForServicesAPIView',
+    'ServiceListAPIView'
 ]
+
+
+
+class ServiceListAPIView(APIView):
+    """
+    get:
+    Retrieve a list of all available services.
+
+    This endpoint returns all services from the database.
+    
+    Returns:
+    - 200 OK with a list of services.
+    - 404 Not Found if no services exist.
+    """
+    permission_classes = [AllowAny]
+    http_method_names = ['get']
+    
+    @swagger_auto_schema(
+        operation_summary="Servisleri qaytarır",
+        responses={200: ServiceSerializer(many=True)}
+    )
+
+    def get(self, request):
+        cache_key = f'services_list'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data, status=status.HTTP_200_OK)
+
+        try:
+            services = Service.objects.all()
+            serializer = ServiceSerializer(services, many=True)
+            cache.set(cache_key, serializer.data, timeout=settings.TIMEOUT)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Category.DoesNotExist:
+            return Response({'error': 'Heç bir servis tapılmadı'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ServicesForCategoryAPIView(APIView):
@@ -75,7 +111,6 @@ class MasterListForServicesAPIView(APIView):
         operation_summary="Kateqoriya üzrə aktiv ustaları qaytarır",
         responses={200: MasterSerializer(many=True)}
     )
-
 
     def get(self, request, service_id):
         pagination = self.pagination_class()
