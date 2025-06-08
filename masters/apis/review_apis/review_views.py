@@ -22,35 +22,25 @@ __all__ = [
     'FilterReviewAPIView'
 ]
 
-
 class ReviewsForMasterAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class = PaginationForMainPage
     http_method_names = ['get']
 
     @swagger_auto_schema(
-        operation_description="Müəyyən bir usta üçün bütün rəyləri səhifələmə ilə əldə edin.",
-        responses={
-            200: ReviewSerializer(many=True),
-            404: openapi.Response(description="Usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('master_id', openapi.IN_PATH, description="Ustanın ID-si", type=openapi.TYPE_INTEGER)
-        ]
+        operation_description="Verilmiş master ID-yə aid bütün rəyləri gətirir (səhifələnmiş).",
+        responses={200: ReviewSerializer(many=True)},
     )
     def get(self, request, master_id):
-        try:
-            master = Master.objects.filter(
-                is_active_on_main_page=True, id=master_id).order_by('-created_at')
-        except Master.DoesNotExist:
-            return Response({'detail': 'Usta tapılmadı.'}, status=status.HTTP_404_NOT_FOUND)
-        
+        master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
+
         pagination = self.pagination_class()
         reviews = Review.objects.filter(master=master)
         result_page = pagination.paginate_queryset(reviews, request)
         serializer = ReviewSerializer(result_page, many=True)
         paginated_response = pagination.get_paginated_response(serializer.data).data
         return Response(paginated_response, status=status.HTTP_200_OK)
+
 
 
 class CreateReviewAPIView(APIView):
@@ -60,16 +50,9 @@ class CreateReviewAPIView(APIView):
     http_method_names = ['post']
 
     @swagger_auto_schema(
-        operation_description="Usta üçün yeni rəy yaratmaq (yalnız authentifikasiya olunmuş istifadəçilər).",
         request_body=ReviewSerializer,
-        responses={
-            201: ReviewSerializer,
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir."),
-            404: openapi.Response(description="Usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('master_id', openapi.IN_PATH, description="Ustanın ID-si", type=openapi.TYPE_INTEGER)
-        ]
+        operation_description="Yeni rəy əlavə edir.",
+        responses={201: ReviewSerializer()}
     )
     @transaction.atomic
     def post(self, request, master_id):
@@ -78,7 +61,7 @@ class CreateReviewAPIView(APIView):
             master = Master.objects.get(is_active_on_main_page=True, id=master_id)
         except Master.DoesNotExist:
             return Response({'detail': 'Usta tapılmadı.'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=user, master=master)
@@ -93,16 +76,9 @@ class UpdateReviewAPIView(APIView):
     http_method_names = ['patch']
 
     @swagger_auto_schema(
-        operation_description="Mövcud rəyi yeniləmək (yalnız rəy sahibi və ya icazəsi olan istifadəçilər).",
         request_body=ReviewSerializer,
-        responses={
-            200: ReviewSerializer,
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir."),
-            404: openapi.Response(description="Rəy tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('review_id', openapi.IN_PATH, description="Rəyin ID-si", type=openapi.TYPE_INTEGER)
-        ]
+        operation_description="Mövcud rəyin məlumatlarını yeniləyir.",
+        responses={200: ReviewSerializer()}
     )
     @transaction.atomic
     def patch(self, request, review_id):
@@ -120,20 +96,14 @@ class DeleteReviewAPIView(APIView):
     http_method_names = ['delete']
 
     @swagger_auto_schema(
-        operation_description="Rəyi silmək (yalnız rəy sahibi və ya icazəsi olan istifadəçilər).",
-        responses={
-            204: openapi.Response(description="Rəy uğurla silindi."),
-            404: openapi.Response(description="Rəy tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('review_id', openapi.IN_PATH, description="Rəyin ID-si", type=openapi.TYPE_INTEGER)
-        ]
+        operation_description="Rəyi silir.",
+        responses={204: openapi.Response('Uğurla silindi')}
     )
     @transaction.atomic
     def delete(self, request, review_id):
         review = get_object_or_404(Review, id=review_id)
         review.delete()
-        return Response({'message': 'Serhiniz ugurla silindi'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': 'Şərhiniz uğurla silindi'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class FilterReviewAPIView(APIView):
@@ -142,24 +112,23 @@ class FilterReviewAPIView(APIView):
     http_method_names = ['get']
 
     @swagger_auto_schema(
-        operation_description="Usta üçün rəyləri filtrləmək və sıralamaq (yeni və ya köhnə tarixə görə).",
-        responses={
-            200: ReviewSerializer(many=True),
-            404: openapi.Response(description="Usta tapılmadı.")
-        },
+        operation_description="Masterə aid rəyləri `order` parametri ilə sıralayıb qaytarır.",
         manual_parameters=[
-            openapi.Parameter('master_id', openapi.IN_PATH, description="Ustanın ID-si", type=openapi.TYPE_INTEGER),
-            openapi.Parameter('order', openapi.IN_QUERY, description="Sıralama: 'newest' və ya 'oldest'", type=openapi.TYPE_STRING, default='newest')
-        ]
+            openapi.Parameter(
+                'order', openapi.IN_QUERY, description="'newest' və ya 'oldest'", type=openapi.TYPE_STRING
+            )
+        ],
+        responses={200: ReviewSerializer(many=True)}
     )
     def get(self, request, master_id):
         pagination = self.pagination_class()
         master = get_object_or_404(Master, is_active_on_main_page=True, id=master_id)
         order = request.query_params.get('order', 'newest')
+
         if order == 'oldest':
-            reviews = Review.objects.filter(master=master).order_by('created_at')  
+            reviews = Review.objects.filter(master=master).order_by('created_at')
         else:
-            reviews = Review.objects.filter(master=master).order_by('-created_at') 
+            reviews = Review.objects.filter(master=master).order_by('-created_at')
 
         result_page = pagination.paginate_queryset(reviews, request)
         serializer = ReviewSerializer(result_page, many=True)

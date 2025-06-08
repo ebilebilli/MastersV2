@@ -25,15 +25,12 @@ class LanguageListAPIView(APIView):
     """
     permission_classes = [AllowAny]
     http_method_names = ['get']
-
+    
     @swagger_auto_schema(
-        operation_summary="Retrieve list of all languages",
-        operation_description=(
-            "This endpoint retrieves all `Language` objects from the database "
-            "and returns them serialized in JSON format."
-        ),
+        operation_description="Bütün mövcud dilləri (Language) qaytarır.",
         responses={200: LanguageSerializer(many=True)}
     )
+
     def get(self, request):
         cache_key = 'language_list'
         cached_data = cache.get(cache_key)

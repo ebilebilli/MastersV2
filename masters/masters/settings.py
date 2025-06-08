@@ -125,13 +125,13 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.UserRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'user': '100/day',
-        'anon': '10/hour'
-    },
+#     'DEFAULT_THROTTLE_CLASSES': [
+#         'rest_framework.throttling.UserRateThrottle',
+# #     ],
+#     'DEFAULT_THROTTLE_RATES': {
+#         'user': '100/day',
+#         'anon': '10/hour'
+#     },
 }
 
 # Celery settings
@@ -161,12 +161,20 @@ SIMPLE_JWT = {
     'ALGORITHM': os.getenv('JWT_ALGORITHM'),
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
-    'AUTH_HEADER_TYPES': (os.getenv('JWT_AUTH_HEADER_TYPE')),
+    'AUTH_HEADER_TYPES': (os.getenv('JWT_AUTH_HEADER_TYPE', 'Bearer'),),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'TOKEN_TYPE_CLAIM': 'token_type',
     'JTI_CLAIM': 'jti',
+
+    # ⬇⬇⬇ ƏLAVƏLƏR ⬇⬇⬇
+    'AUTH_TOKEN_CLASSES': (
+        'rest_framework_simplejwt.tokens.AccessToken',
+        'rest_framework_simplejwt.tokens.RefreshToken',
+    ),
+    'TOKEN_BLACKLIST_ENABLED': True,
 }
+
 
 #Elasticsearch settings
 ELASTICSEARCH_DSL = {
@@ -188,4 +196,31 @@ CACHES = {
     }
 }
 
-TIMEOUT = int(os.getenv('TIMEOUT'))
+TIMEOUT = int(os.getenv('TIMEOUT', 3600))
+
+# Swagger configuration
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        }
+    },
+    "USE_SESSION_AUTH": False,  
+}
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}

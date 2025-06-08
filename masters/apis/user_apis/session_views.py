@@ -29,31 +29,15 @@ class LoginAPIView(APIView):
     """
     permission_classes = [AllowAny]
     http_method_names = ['post']
-
+    
     @swagger_auto_schema(
-        operation_description="Telefon nömrəsi və parol ilə istifadəçi girişi. Uğurlu autentifikasiya zamanı JWT access və refresh tokenləri qaytarılır.",
         request_body=LoginSerializer,
         responses={
-            200: openapi.Response(
-                description="Uğurlu giriş",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'message': openapi.Schema(type=openapi.TYPE_STRING, description="Uğurlu giriş mesajı"),
-                        'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description="İstifadəçinin telefon nömrəsi"),
-                        'tokens': openapi.Schema(
-                            type=openapi.TYPE_OBJECT,
-                            properties={
-                                'refresh': openapi.Schema(type=openapi.TYPE_STRING, description="JWT refresh token"),
-                                'access': openapi.Schema(type=openapi.TYPE_STRING, description="JWT access token")
-                            }
-                        )
-                    }
-                )
-            ),
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir.")
+            200: 'Uğurla daxil oldunuz!',
+            400: 'Yanlış məlumat'
         }
     )
+
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -79,22 +63,21 @@ class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     http_method_names = ['post']
-
+    
     @swagger_auto_schema(
-        operation_description="İstifadəçi çıxışı üçün API endpointi. Təqdim olunan refresh tokeni qara siyahıya salınır.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
+            required=['refresh'],
             properties={
-                'refresh': openapi.Schema(type=openapi.TYPE_STRING, description="JWT refresh token")
-            },
-            required=['refresh']
+                'refresh': openapi.Schema(type=openapi.TYPE_STRING)
+            }
         ),
         responses={
-            205: openapi.Response(description="Uğurla çıxış etdiniz."),
-            400: openapi.Response(description="Refresh token daxil edilməyib və ya etibarsızdır."),
-            401: openapi.Response(description="İcazəsiz giriş.")
+            205: 'Uğurla çıxış etdiniz!',
+            400: 'Etibarsız token və ya token daxil edilməyib'
         }
     )
+
     def post(self, request):
         """
         Handle POST request to blacklist the refresh token and log the user out.
@@ -118,26 +101,18 @@ class PasswordResetRequestAPIView(APIView):
     Applies throttling to limit request rate.
     """
     permission_classes = [AllowAny]
-    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+    # throttle_classes = [AnonRateThrottle, UserRateThrottle]
     http_method_names = ['post']
-
+    
     @swagger_auto_schema(
-        operation_description="Telefon nömrəsi ilə parol sıfırlama OTP-si tələb etmək üçün API endpointi. Sorğu tezliyini məhdudlaşdırmaq üçün throttling tətbiq olunur.",
         request_body=PasswordResetRequestSerializer,
         responses={
-            200: openapi.Response(
-                description="OTP uğurla göndərildi.",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'message': openapi.Schema(type=openapi.TYPE_STRING, description="Uğurlu əməliyyat mesajı")
-                    }
-                )
-            ),
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir."),
-            500: openapi.Response(description="OTP göndərilə bilmədi.")
+            200: 'OTP göndərildi',
+            400: 'Yanlış məlumat',
+            500: 'OTP göndərilə bilmədi'
         }
     )
+
     @transaction.atomic
     def post(self, request):
         """
@@ -164,24 +139,16 @@ class PasswordResetConfirmAPIView(APIView):
     """
     permission_classes = [AllowAny]
     http_method_names = ['post']
-
+    
     @swagger_auto_schema(
-        operation_description="OTP və yeni parol ilə parol sıfırlamasını təsdiqləmək üçün API endpointi.",
         request_body=PasswordResetConfirmSerializer,
         responses={
-            200: openapi.Response(
-                description="Parol uğurla dəyişdirildi.",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'message': openapi.Schema(type=openapi.TYPE_STRING, description="Uğurlu əməliyyat mesajı")
-                    }
-                )
-            ),
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir."),
-            500: openapi.Response(description="Parol dəyişdirilə bilmədi.")
+            200: 'Parol uğurla dəyişdirildi',
+            400: 'Yanlış məlumat',
+            500: 'Parol dəyişdirilə bilmədi'
         }
     )
+
     @transaction.atomic
     def post(self, request):
         """

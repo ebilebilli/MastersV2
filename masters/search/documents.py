@@ -77,6 +77,21 @@ class MasterDocument(Document):
             'slug',
         ]
         related_models = [Category, Service, City, District]
+        
+    def get_instances_from_related(self, related_instance):
+        try:
+            if isinstance(related_instance, Category):
+                return Master.objects.filter(profession_category=related_instance)
+            elif isinstance(related_instance, Service):
+                return Master.objects.filter(profession_service=related_instance)
+            elif isinstance(related_instance, City):
+                return Master.objects.filter(cities=related_instance)
+            elif isinstance(related_instance, District):
+                return Master.objects.filter(districts=related_instance)
+            return []
+        except Exception as e:
+            return []
+    
 
     def prepare_average_rating(self, instance):
         return instance.average_rating() or None

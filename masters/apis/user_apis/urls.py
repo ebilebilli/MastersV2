@@ -76,7 +76,7 @@ urlpatterns = [
     
     #Master handwork images endpoints
     path(
-        'masters/images/',
+        'masters/<int:master_id>/images/',
         WorkImagesForMasterAPIView.as_view(),
         name='work-images'
     ),

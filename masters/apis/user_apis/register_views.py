@@ -32,31 +32,15 @@ class RegisterPersonalAPIView(APIView):
     permission_classes = [AllowAny]
     parser_classes = [JSONParser, MultiPartParser]
     http_method_names = ['post']
-
+    
     @swagger_auto_schema(
-        operation_description="Qeydiyyatın 1-ci mərhələsi: Yeni usta üçün şəxsi məlumatları yaradın.",
         request_body=PersonalInformationSerializer,
         responses={
-            201: openapi.Response(
-                description="Şəxsi məlumatlar uğurla saxlanıldı.",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'message': openapi.Schema(type=openapi.TYPE_STRING, description="Uğurlu əməliyyat mesajı"),
-                        'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description="Ustanın telefon nömrəsi"),
-                        'token': openapi.Schema(
-                            type=openapi.TYPE_OBJECT,
-                            properties={
-                                'refresh': openapi.Schema(type=openapi.TYPE_STRING, description="JWT refresh token"),
-                                'access': openapi.Schema(type=openapi.TYPE_STRING, description="JWT access token")
-                            }
-                        )
-                    }
-                )
-            ),
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir.")
+            201: 'Şəxsi məlumatlar uğurla saxlanıldı',
+            400: 'Yanlış məlumat'
         }
     )
+
     @transaction.atomic
     def post(self, request):
         serializer = PersonalInformationSerializer(data=request.data)
@@ -93,26 +77,16 @@ class RegisterProfessionAPIView(APIView):
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser, MultiPartParser]
     http_method_names = ['post']
-
+    
     @swagger_auto_schema(
-        operation_description="Qeydiyyatın 2-ci mərhələsi: Mövcud qeyri-aktiv usta üçün peşə məlumatlarını yeniləyin.",
         request_body=ProfessionInformationSerializer,
         responses={
-            200: openapi.Response(
-                description="Peşə məlumatları uğurla saxlanıldı.",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'message': openapi.Schema(type=openapi.TYPE_STRING, description="Uğurlu əməliyyat mesajı"),
-                        'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description="Ustanın telefon nömrəsi")
-                    }
-                )
-            ),
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir."),
-            401: openapi.Response(description="İcazəsiz giriş."),
-            404: openapi.Response(description="İstifadəçi tapılmadı və ya qeydiyyatın bu mərhələsinə uyğun deyil.")
+            200: 'Peşə məlumatları uğurla saxlanıldı',
+            400: 'Yanlış məlumat',
+            404: 'İstifadəçi tapılmadı'
         }
     )
+
     @transaction.atomic
     def post(self, request):
         user_id = request.user.id
@@ -140,25 +114,16 @@ class RegisterAdditionalAPIView(APIView):
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser, MultiPartParser]
     http_method_names = ['post']
-
+    
     @swagger_auto_schema(
-        operation_description="Qeydiyyatın 3-cü mərhələsi: Əlavə məlumatlar əlavə edin və usta profilini aktivləşdirin.",
         request_body=AdditionalInformationSerializer,
         responses={
-            200: openapi.Response(
-                description="Profil uğurla yaradıldı.",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'message': openapi.Schema(type=openapi.TYPE_STRING, description="Uğurlu əməliyyat mesajı")
-                    }
-                )
-            ),
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir."),
-            401: openapi.Response(description="İcazəsiz giriş."),
-            404: openapi.Response(description="İstifadəçi tapılmadı və ya qeydiyyatın bu mərhələsinə uyğun deyil.")
+            200: 'Profiliniz uğurla yaradıldı!',
+            400: 'Yanlış məlumat',
+            404: 'İstifadəçi tapılmadı'
         }
     )
+
     @transaction.atomic
     def post(self, request):
         user_id = request.user.id

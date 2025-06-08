@@ -27,29 +27,13 @@ class MastersListAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class = CustomPagination
     http_method_names = ['get']
-
+    
     @swagger_auto_schema(
-        operation_description="Bütün aktiv ustaların orta reytinq və rəy sayı ilə səhifələnmiş siyahısını əldə edin.",
-        responses={
-            200: openapi.Response(
-                description="Səhifələnmiş ustalar siyahısı",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'count': openapi.Schema(type=openapi.TYPE_INTEGER, description="Ümumi nəticə sayı"),
-                        'next': openapi.Schema(type=openapi.TYPE_STRING, description="Növbəti səhifənin URL-i", nullable=True),
-                        'previous': openapi.Schema(type=openapi.TYPE_STRING, description="Əvvəlki səhifənin URL-i", nullable=True),
-                        'results': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=MasterSerializer,
-                            description="Aktiv ustaların siyahısı"
-                        )
-                    }
-                )
-            ),
-            404: openapi.Response(description="Hal-hazırda aktiv bir usta yoxdur.")
-        }
+        operation_summary="Aktiv ustaların siyahısı",
+        operation_description="Orta reytinq və rəy sayı ilə birlikdə aktiv ustaları göstərir.",
+        responses={200: MasterSerializer(many=True)}
     )
+
     def get(self, request):
         pagination = self.pagination_class()
         masters = Master.objects.annotate(
@@ -75,29 +59,13 @@ class TopRatedMastersListAPIView(APIView):
     permission_classes = [AllowAny]
     pagination_class = PaginationForMainPage
     http_method_names = ['get']
-
+    
     @swagger_auto_schema(
-        operation_description="Ən yüksək reytinqli aktiv ustaların reytinq, rəy sayı və son girişə görə sıralanmış səhifələnmiş siyahısını əldə edin.",
-        responses={
-            200: openapi.Response(
-                description="Səhifələnmiş ustalar siyahısı",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'count': openapi.Schema(type=openapi.TYPE_INTEGER, description="Ümumi nəticə sayı"),
-                        'next': openapi.Schema(type=openapi.TYPE_STRING, description="Növbəti səhifənin URL-i", nullable=True),
-                        'previous': openapi.Schema(type=openapi.TYPE_STRING, description="Əvvəlki səhifənin URL-i", nullable=True),
-                        'results': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=MasterSerializer,
-                            description="Ən yüksək reytinqli ustaların siyahısı"
-                        )
-                    }
-                )
-            ),
-            404: openapi.Response(description="Hal-hazırda aktiv bir usta yoxdur.")
-        }
+        operation_summary="Ən yüksək reytinqli ustalar",
+        operation_description="Reytinqə, rəy sayına və son daxil olmağa görə sıralanmış aktiv ustalar.",
+        responses={200: MasterSerializer(many=True)}
     )
+
     def get(self, request):
         pagination = self.pagination_class()
         masters = Master.objects.annotate(
@@ -129,35 +97,28 @@ class MasterDetailAPIView(APIView):
     http_method_names = ['get', 'patch', 'delete']
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-
+    
     @swagger_auto_schema(
-        operation_description="Ustanın ID ilə ətraflı məlumatlarını əldə edin.",
-        responses={
-            200: MasterSerializer,
-            404: openapi.Response(description="Usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('master_id', openapi.IN_PATH, description="Ustanın ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+        operation_summary="Usta məlumatlarını göstər",
+        responses={200: MasterSerializer()}
     )
+
+
     def get(self, request, master_id):
         master = get_object_or_404(Master, id=master_id, is_active_on_main_page=True)
         serializer = MasterSerializer(master)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+    
     @swagger_auto_schema(
-        operation_description="Ustanın məlumatlarını yeniləyin (yalnız usta özü və ya superuser).",
-        request_body=MasterSerializer,
+        operation_summary="Ustanı yenilə",
+        request_body=MasterSerializer(partial=True),
         responses={
-            200: MasterSerializer,
-            400: openapi.Response(description="Daxil edilən məlumatlar səhvdir."),
-            403: openapi.Response(description="Bunu etməyə icazəniz yoxdur."),
-            404: openapi.Response(description="Usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('master_id', openapi.IN_PATH, description="Ustanın ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+            200: MasterSerializer(),
+            400: 'Daxil edilən məlumatlar səhvdir',
+            403: 'İcazəniz yoxdur'
+        }
     )
+
     def patch(self, request, master_id):
         user = request.user
         master = get_object_or_404(Master, id=master_id)
@@ -169,18 +130,15 @@ class MasterDetailAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'error': 'Daxil edilən məlumatlar səhvdir'}, status=status.HTTP_400_BAD_REQUEST)
-
+    
     @swagger_auto_schema(
-        operation_description="Ustanı silin (yalnız usta özü və ya superuser).",
+        operation_summary="Ustanı sil",
         responses={
-            204: openapi.Response(description="Hesab uğurla silindi."),
-            403: openapi.Response(description="Bunu etməyə icazəniz yoxdur."),
-            404: openapi.Response(description="Usta tapılmadı.")
-        },
-        manual_parameters=[
-            openapi.Parameter('master_id', openapi.IN_PATH, description="Ustanın ID-si", type=openapi.TYPE_INTEGER, required=True)
-        ]
+            204: openapi.Response(description="Hesab silindi"),
+            403: 'İcazəniz yoxdur'
+        }
     )
+    
     def delete(self, request, master_id):
         user = request.user
         master = get_object_or_404(Master, id=master_id)
