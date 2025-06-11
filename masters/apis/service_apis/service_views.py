@@ -145,6 +145,14 @@ class MasterListForServicesAPIView(APIView):
 @api_view(['GET'])
 @permission_classes([AllowAny]) 
 def statistics_view(request):
+    
+    """
+    Returns platform statistics:
+    - Active masters (as range)
+    - Service type count
+    - Average rating
+    """
+    
     master_count = Master.objects.filter(is_active_on_main_page=True).count()
     category_count = Category.objects.count()
     avg_rating = Review.objects.aggregate(avg=Avg('rating'))['avg'] or 0.0
