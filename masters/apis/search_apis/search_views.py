@@ -22,7 +22,13 @@ experience_param = openapi.Parameter('experience', openapi.IN_QUERY, description
 ordering_param = openapi.Parameter('ordering', openapi.IN_QUERY, description="Field to order by, e.g., 'experience', 'full_name.keyword'", type=openapi.TYPE_STRING)
 page_param = openapi.Parameter('page', openapi.IN_QUERY, description="Page number", type=openapi.TYPE_INTEGER)
 page_size_param = openapi.Parameter('page_size', openapi.IN_QUERY, description="Page size (max 100)", type=openapi.TYPE_INTEGER)
+
 class SearchAPIView(APIView):
+    """
+    Search API for filtering masters based on various parameters like
+    profession, location, experience, and keyword search.
+    """
+    
     permission_classes = [AllowAny]
     http_method_names = ['get']
 
