@@ -4,7 +4,7 @@ from utils.otp import create_otp
 
 
 @shared_task
-def send_otp(phone_number):
+def send_otp_task(phone_number):
     #In next progress we need to buy sms service for real otp code system
     #This is only for test
     code = create_otp(phone_number)

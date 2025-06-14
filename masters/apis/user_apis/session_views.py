@@ -12,7 +12,7 @@ from drf_yasg import openapi
 from users.serializers.login_serializer import LoginSerializer
 from users.serializers.password_serializers import PasswordResetConfirmSerializer, PasswordResetRequestSerializer
 from users.models import Master
-from users.tasks import send_otp
+from users.tasks import send_otp_task
 
 __all__ = [
     'LoginAPIView',
@@ -121,7 +121,7 @@ class PasswordResetRequestAPIView(APIView):
         serializer = PasswordResetRequestSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                send_otp(serializer.validated_data['phone_number'])
+                send_otp_task.delay((serializer.validated_data['phone_number']))
                 serializer.save()
                 return Response({
                     'message': 'OTP göndərildi.'

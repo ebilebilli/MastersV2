@@ -58,13 +58,6 @@ class ProfessionInformationSerializer(serializers.ModelSerializer):
         fields = ['profession_category', 'profession_service', 'experience', 'cities', 'districts','custom_profession']
         
     def validate(self, data):
-        """
-        Performs:
-        - Required field check
-        - Service-category match validation
-        - If 'Other' service selected, `custom_profession` is required
-        - Districts allowed only if Baku is selected
-        """
         required_fields = ['profession_category', 'profession_service', 'cities']
         for field in required_fields:
             if not data.get(field):
