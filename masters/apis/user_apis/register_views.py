@@ -6,9 +6,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db import transaction
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from users.models import CustomerUser
 from users.serializers.register_serializers import *
+
+portfolio_images = openapi.Schema(
+    type=openapi.TYPE_ARRAY,
+    items=openapi.Schema(type=openapi.TYPE_FILE, format='binary'),
+    description="Portfolio şəkilləri (maksimum 10 ədəd, hər biri 5MB-dan böyük olmamalıdır)",
+    max_items=10,
+    nullable=True,
+)
 
 __all__ = [
     'RegisterRoleSelectionAPIView',
@@ -123,6 +133,35 @@ class RegisterAdditionalAPIView(APIView):
     parser_classes = [JSONParser, MultiPartParser]
     http_method_names = ['post']
 
+    @swagger_auto_schema(
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['languages'],  # Əgər `languages` mütləqdirsə
+        properties={
+            'education': openapi.Schema(type=openapi.TYPE_STRING, description='Təhsil səviyyəsi'),
+            'education_detail': openapi.Schema(type=openapi.TYPE_STRING, description='Təhsil ixtisası'),
+            'languages': openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                description='Dil ID-ləri',
+            ),
+            'profile_picture': openapi.Schema(type=openapi.TYPE_FILE, format='binary', description='Profil şəkli'),
+            'facebook_url': openapi.Schema(type=openapi.TYPE_STRING, description='Facebook URL', nullable=True),
+            'instagram_url': openapi.Schema(type=openapi.TYPE_STRING, description='Instagram URL', nullable=True),
+            'tiktok_url': openapi.Schema(type=openapi.TYPE_STRING, description='TikTok URL', nullable=True),
+            'linkedin_url': openapi.Schema(type=openapi.TYPE_STRING, description='LinkedIn URL', nullable=True),
+            'youtube_url': openapi.Schema(type=openapi.TYPE_STRING, description='YouTube URL', nullable=True),
+            'note': openapi.Schema(type=openapi.TYPE_STRING, description='Qeyd', nullable=True),
+            'portfolio_images': portfolio_images,
+        },
+    ),
+    responses={
+        200: openapi.Response(description="Profiliniz uğurla yaradıldı!"),
+        400: openapi.Response(description="Validation error"),
+        403: openapi.Response(description="Yalnız ustalar üçün."),
+        404: openapi.Response(description="İstifadəçi tapılmadı."),
+    },
+)
     @transaction.atomic
     def post(self, request):
         if request.user.user_role != CustomerUser.MASTER:  
