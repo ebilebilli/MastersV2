@@ -1,6 +1,8 @@
 from rest_framework.views import APIView, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from django.core.cache import cache
 from django.conf import settings
 
@@ -23,7 +25,16 @@ class CityListAPIView(APIView):
     """
     permission_classes = [AllowAny]
     http_method_names = ['get']
-
+    
+    @swagger_auto_schema(
+        operation_summary="Get all cities",
+        operation_description="Returns a list of all cities in JSON format.",
+        responses={
+            200: CitySerializer(many=True),
+            404: openapi.Response('No cities found.'),
+            500: openapi.Response('Internal server error.')
+        }
+    )
     def get(self, request):
         cache_key = f'city_list'
         cached_data = cache.get(cache_key)
